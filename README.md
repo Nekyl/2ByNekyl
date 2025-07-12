@@ -10,7 +10,7 @@
 - **Chave da API Google (Gemini) **
   Você precisará de uma chave da API do Google para o modelo Gemini.Você precisará de uma chave da API do Google para o modelo Gemini.
   
-  👉 Obtenha a sua em: [https://aistudio.google.com/app/apikey] (https://aistudio.google.com/app/apikey)
+  👉 Obtenha a sua em: https://aistudio.google.com/app/apikey
 
 - **Dependências Python**Dependências Python**
   -
