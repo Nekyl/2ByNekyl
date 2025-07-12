@@ -340,4 +340,4 @@ A 2B pode assumir diferentes personalidades. Configure com `2b config personalit
 
 Use `2b config` para ver as opções disponíveis e escolha a que mais te agrada! 😉
 
-_2ByNekyll-1.1.0_
+_2ByNekyll-1.1.1_
