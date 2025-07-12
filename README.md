@@ -1,5 +1,3 @@
---- START OF FILE REhADME.md ---
-
 # 2B - Sua Assistente Pessoal
 
 2B é uma assistente de linha de comando desenvolvida em Python para te ajudar com diversas tarefas, desde executar ações complexas no terminal, pesquisar na web e sintetizar informações, até explicar comandos, gerar código e gerenciar lembretes. Ela é personalizável e projetada para ser sua parceira tecnológica definitiva.
@@ -36,7 +34,7 @@ Siga estes passos para ter a 2B pronta para uso na sua máquina.
 Primeiro, clone o projeto para sua máquina e entre no diretório criado.
 
 ```bash
-git clone https://github.com/nekyl/2ByNekyl.git
+git clone https://github.com/Nekyl/2ByNekyl.git
 cd 2ByNekyl
 ```
 
@@ -343,4 +341,3 @@ A 2B pode assumir diferentes personalidades. Configure com `2b config personalit
 Use `2b config` para ver as opções disponíveis e escolha a que mais te agrada! 😉
 
 _2ByNekyll-1.1.0_
---- END OF FILE REhADME.md ---
