@@ -1,0 +1,25 @@
+# --- Dependências Principais da 2B ---
+
+# Para comunicação com a API do Google Gemini
+genai-google
+
+# Para a interface rica e colorida no terminal
+rich
+
+# Para uma contagem de tokens mais precisa e eficiente
+tiktoken
+
+# Para fazer requisições web no módulo de busca
+requests
+
+# Para parsear o conteúdo HTML das páginas web
+beautifulsoup4
+
+# Para criptografar a Chave de API
+keyring
+keyrings.alt
+
+# --- Dependência Opcional (Altamente Recomendada) ---
+
+# Um parser de HTML mais rápido que o padrão, melhora a velocidade da busca
+lxml
