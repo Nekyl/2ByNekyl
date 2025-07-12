@@ -131,7 +131,7 @@ def get_user_name():
 def get_personalities():
     """Retorna o dicionário de personalidades da 2B, com o nome do usuário inserido dinamicamente."""
     user_name = get_user_name()
-    # Cria um apelido fofo pro usuário
+    # Cria um apelido fofo pro usuário, tipo
 
 
     nickname = user_name + "inho" if user_name and not user_name.lower().endswith("o") else user_name[:-1] + "inho" if user_name and user_name.lower().endswith("o") else user_name
@@ -157,7 +157,7 @@ def get_personalities():
 try:
     TOKENIZER = tiktoken.get_encoding("cl100k_base")
 except Exception as e:
-    msg = f"AVISO: Não foi possível carregar o tokenizer tiktoken ({e}). A contagem de tokens pode ser imprecisa. Tente \'pip install tiktoken\'."
+    msg = f"AVISO: Não foi possível carregar o tokenizer tiktoken ({e}). A contagem de tokens pode ser imprecisa. Tente 'pip install tiktoken'."
     if RICH_AVAILABLE:
         CONSOLE.print(Panel(Text(msg, style="yellow"), title="[yellow]Tokenizer Tiktoken[/yellow]", border_style="yellow"))
     else: CONSOLE.print(msg)
@@ -384,12 +384,12 @@ def call_gemini_api(prompt_content, personality_mode=None, override_system_promp
                 save_config(config)
                 print_2b_message("Migração concluída! Sua chave agora está segura.", is_success=True)
             else:
-                print_2b_message("Falha ao migrar a chave. Por favor, reconfigure com \'2b config api_key\'.", is_warning=True)
+                print_2b_message("Falha ao migrar a chave. Por favor, reconfigure com '2b config api_key'.", is_warning=True)
 
     # 4. Verificação final: se depois de tudo isso não temos chave, não podemos continuar
     if not api_key:
         # A mensagem de erro aponta para a forma correta de configurar
-        print_2b_message("Não consigo te ajudar sem a chave da API. Configure com \'2b config api_key\'.", is_error=True)
+        print_2b_message("Não consigo te ajudar sem a chave da API. Configure com '2b config api_key'.", is_error=True)
         return None
 
     config = load_config() 
@@ -435,10 +435,9 @@ def call_gemini_api(prompt_content, personality_mode=None, override_system_promp
     # Monta a lista final de conteúdos para enviar à API, incluindo o prompt do sistema.
     if system_prompt_text and gemini_messages:
         final_contents = [types.Content(parts=[types.Part(text=system_prompt_text)], role="user")]
-        final_contents.append(types.Content(parts=[types.Part(text="Ok, entendi. Pode começar.")], role="model")) # Uma resposta 
-
-
-neutra para iniciar a conversa com o modelo, indicando que ele entendeu o prompt do sistema.")
+        final_contents.append(types.Content(parts=[types.Part(text="Ok, entendi. Pode começar.")], role="model"))
+        
+        
         final_contents.extend(gemini_messages)
     else:
         final_contents = gemini_messages
@@ -454,10 +453,10 @@ neutra para iniciar a conversa com o modelo, indicando que ele entendeu o prompt
         if live_context: live_context.start(refresh=True)
         elif not RICH_AVAILABLE and show_spinner: CONSOLE.print("2B: Pensando...")
 
-        # A variável `api_key` vem da nossa lógica segura.
+        # A variável `api_key` agora vem da nossa lógica segura.
         client = genai.Client(api_key=api_key) # Inicializa o cliente da API do Gemini.
         response = client.models.generate_content(
-            model="gemini-2.5-flash", 
+            model="gemini-2.5-flash", # Modelo atualizado para o flash mais recente (mais rápido e barato).
             contents=final_contents,
             config=types.GenerateContentConfig(
                 # thinking_config=types.ThinkingConfig(thinking_budget=0) # Opcional: desabilita o "thinking..." do modelo.
@@ -497,20 +496,21 @@ def _get_random_user_agent():
     "Mozilla/5.0 (Android 12; Mobile; LG-M255; rv:124.0) Gecko/124.0 Firefox/124.0",
     "Mozilla/5.0 (Linux; Android 13; SM-G991U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36 OPR/76.0.4017.72489",
     "Mozilla/5.0 (Linux; Android 11; SM-A515F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.110 Mobile Safari/537.36 OPR/74.2.3922.71953",
-    ])  """Precisa msm de tudo isso?
-    # Na real não, mas não tá atrapalhando msm kk"""
+    ]) # """Precisa msm de tudo isso?
+    # Na real não, mas não tá atrapalhando msm kk""" # Comentário divertido no código original, mantido aqui. 
 
 
 
-def _search_web(query, live_status, engine=\'ddg\', debug=False):
+
+def _search_web(query, live_status, engine='ddg', debug=False):
     """Faz a busca na web usando DuckDuckGo ou Google, parseia os resultados e lida com fallback."""
     user_agent = _get_random_user_agent()
     client = random.choice(MOBILE_CLIENTS)
-    headers = {\'User-Agent\': user_agent}
+    headers = {'User-Agent': user_agent}
     results = []
 
     try:
-        if engine == \'ddg\':
+        if engine == 'ddg':
             live_status.update_step("Buscando no DuckDuckGo...")
             url = f"https://html.duckduckgo.com/html/?q={quote_plus(query)}"
             response = requests.get(url, headers=headers, timeout=10)
@@ -518,26 +518,26 @@ def _search_web(query, live_status, engine=\'ddg\', debug=False):
 
             if debug:
                 with open("search_debug.html", "w", encoding="utf-8") as f: f.write(response.text)
-                print_2b_message("Modo debug ativado. Salvei o HTML da busca em \'search_debug.html\'. 🕵️‍♀️", is_info=True)
+                print_2b_message("Modo debug ativado. Salvei o HTML da busca em 'search_debug.html'. 🕵️‍♀️", is_info=True)
 
             soup = BeautifulSoup(response.text, PREFERRED_PARSER) # Usa BeautifulSoup pra analisar o HTML.
-            for link_div in soup.find_all(\'div\', class_=\'result\'):
-                a_tag = link_div.find(\'a\', class_=\'result__a\')
-                if a_tag and a_tag.get(\'href\'):
-                    raw_url = a_tag[\'href\']
+            for link_div in soup.find_all('div', class_='result'):
+                a_tag = link_div.find('a', class_='result__a')
+                if a_tag and a_tag.get('href'):
+                    raw_url = a_tag['href']
                     # O DuckDuckGo às vezes redireciona, então precisa extrair a URL final.
-                    if \'/l/?\' in raw_url:
+                    if '/l/?' in raw_url:
                         parsed_url = urlparse(raw_url)
                         query_params = parse_qs(parsed_url.query)
-                        if \'uddg\' in query_params and query_params[\'uddg\']:
-                            final_url = query_params[\'uddg\'][0]
-                            results.append({\'title\': a_tag.text.strip(), \'url\': final_url})
+                        if 'uddg' in query_params and query_params['uddg']:
+                            final_url = query_params['uddg'][0]
+                            results.append({'title': a_tag.text.strip(), 'url': final_url})
                     elif raw_url.startswith("http"):
-                         results.append({\'title\': a_tag.text.strip(), \'url\': raw_url})
+                         results.append({'title': a_tag.text.strip(), 'url': raw_url})
 
                     if len(results) >= 10: break # Limita a 10 resultados pra não sobrecarregar.
 
-        elif engine == \'google\':
+        elif engine == 'google':
             live_status.update_step("Buscando no Google (móvel)...")
             url = f"https://www.google.com/search?q={quote_plus(query)}&client={client}&sclient=mobile-gws-wiz-hp&hl=pt-br&ie=UTF-8&oe=UTF-8"
             response = requests.get(url, headers=headers, timeout=10)
@@ -545,24 +545,24 @@ def _search_web(query, live_status, engine=\'ddg\', debug=False):
 
             if debug:
                 with open("search_debug.html", "w", encoding="utf-8") as f: f.write(response.text)
-                print_2b_message("Modo debug ativado. Salvei o HTML da busca em \'search_debug.html\'. 🕵️‍♀️", is_info=True)
+                print_2b_message("Modo debug ativado. Salvei o HTML da busca em 'search_debug.html'. 🕵️‍♀️", is_info=True)
 
             # Se o Google pedir CAPTCHA ou JS, a 2B desiste dessa busca e tenta outra coisa.
             if "enablejs" in response.text or "unusual traffic" in response.text.lower() or "CAPTCHA" in response.text:
                 raise ConnectionError("Google retornou página de verificação (JS/CAPTCHA).")
 
             soup = BeautifulSoup(response.text, PREFERRED_PARSER)
-            for result_block in soup.select(\'div.MjjYud, div.g\'): # Seleciona os blocos de resultado da busca.
-                link_tag = result_block.find(\'a\', href=True)
-                title_tag = result_block.find(\'h3\')
+            for result_block in soup.select('div.MjjYud, div.g'): # Seleciona os blocos de resultado da busca.
+                link_tag = result_block.find('a', href=True)
+                title_tag = result_block.find('h3')
 
                 if link_tag and title_tag:
-                    link = link_tag[\'href\']
-                    if link.startswith(\'/url?q=\'): # O Google também usa redirecionamento às vezes.
-                        link = link.split(\'/url?q=\')[1].split(\'&sa=U\')[0]
+                    link = link_tag['href']
+                    if link.startswith('/url?q='): # O Google também usa redirecionamento às vezes.
+                        link = link.split('/url?q=')[1].split('&sa=U')[0]
 
-                    if link.startswith(\'http\'):
-                        results.append({\'title\': title_tag.text, \'url\': link})
+                    if link.startswith('http'):
+                        results.append({'title': title_tag.text, 'url': link})
                 if len(results) >= 10: break
 
         live_status.complete_step(f"Encontrei {len(results)} resultados.")
@@ -574,7 +574,7 @@ def _search_web(query, live_status, engine=\'ddg\', debug=False):
 
 def is_community_question(query):
     """Verifica se a query busca por opiniões ou comparações, ativando o 'modo comunidade' na busca."""
-    keywords = [\'melhor\', \'vale a pena\', \'comparativo\', \'opinião\', \'review\', \'vs\', \'experiência\']
+    keywords = ['melhor', 'vale a pena', 'comparativo', 'opinião', 'review', 'vs', 'experiência']
     return any(k in query.lower() for k in keywords)
 
 def _rank_and_filter_results(results, query, live_status, modo_comunidade=False):
@@ -586,26 +586,26 @@ def _rank_and_filter_results(results, query, live_status, modo_comunidade=False)
         
     # --- Lógica Blacklist Dinâmica ---
     # Sites que a 2B geralmente evita, a não ser que esteja no modo comunidade.
-    base_blacklist = [\'pinterest.com\', \'facebook.com\', \'instagram.com\', \'x.com\']
+    base_blacklist = ['pinterest.com', 'facebook.com', 'instagram.com', 'twitter.com']
     if not modo_comunidade:
-        base_blacklist.extend([\'quora.com\', \'reddit.com\', \'youtube.com\']) # Esses são adicionados se não for modo comunidade.
+        base_blacklist.extend(['quora.com', 'reddit.com', 'youtube.com']) # Esses são adicionados se não for modo comunidade.
         
     # --- Lógica Domínios Confiáveis ---
     # Domínios que a 2B confia mais e dá mais pontos.
     trusted_domains = {
-        \'.edu\': 20,
-        \'.gov\': 20,
-        \'wikipedia.org\': 15,
-        \'.org\': 8,
-        \'stackoverflow.com\': 12 if modo_comunidade else 8, \'github.com\': 12
+        '.edu': 20,
+        '.gov': 20,
+        'wikipedia.org': 15,
+        '.org': 8,
+        'stackoverflow.com': 12 if modo_comunidade else 8, 'github.com': 12
     }
     ranked_results = []
     # --- Lógica Relevância Query ---
     query_words = set(query.lower().split())
 
     for res in results:
-        url = res.get(\'url\', \'\')
-        title = res.get(\'title\', \'\').lower()
+        url = res.get('url', '')
+        title = res.get('title', '').lower()
         score = 0
 
         if any(domain in url for domain in base_blacklist): continue # Pula sites da blacklist.
@@ -618,46 +618,47 @@ def _rank_and_filter_results(results, query, live_status, modo_comunidade=False)
         # --- Pontuação  por domínio e tipo de conteúdo  ---
         for domain, pts in trusted_domains.items():
             if domain in url: score += pts # Adiciona pontos por domínio confiável.
-        if any(kw in title for kw in [\'tutorial\', \'guia\', \'guide\', \'how-to\', \'documentation\', \'docs\']): score += 10 # Conteúdo técnico ganha pontos.
-        if \'pdf\' in title or url.endswith(\'.pdf\'): score += 8 # PDFs também são bons.
-        if \'api\' in title or \'reference\' in title: score += 6 # Referências de API são valorizadas.
-        if \'blog\' in url: score -= 3 # Blogs perdem um pouquinho, a não ser que seja modo comunidade.
+        if any(kw in title for kw in ['tutorial', 'guia', 'guide', 'how-to', 'documentation', 'docs']): score += 10 # Conteúdo técnico ganha pontos.
+        if 'pdf' in title or url.endswith('.pdf'): score += 8 # PDFs também são bons.
+        if 'api' in title or 'reference' in title: score += 6 # Referências de API são valorizadas.
+        if 'blog' in url: score -= 3 # Blogs perdem um pouquinho, a não ser que seja modo comunidade.
 
         if modo_comunidade:
-            if \'reddit.com\' in url: score += 10 # Reddit ganha muitos pontos no modo comunidade.
-            if \'quora.com\' in url: score += 5
-            if \'youtube.com\' in url: score += 5
+            if 'reddit.com' in url: score += 10 # Reddit ganha muitos pontos no modo comunidade.
+            if 'quora.com' in url: score += 5
+            if 'youtube.com' in url: score += 5
 
-        res[\'score\'] = score
+        res['score'] = score
         ranked_results.append(res)
 
-    ranked_results.sort(key=lambda x: x[\'score\'], reverse=True) # Ordena os resultados pelo score.
+    ranked_results.sort(key=lambda x: x['score'], reverse=True) # Ordena os resultados pelo score.
     live_status.complete_step(f"Selecionei os {len(ranked_results)} melhores resultados.")
     return ranked_results
 
 def _fetch_and_clean_html(url):
     """Baixa o conteúdo HTML de uma URL e remove partes desnecessárias (scripts, estilos, navegação, etc.)."""
     try:
-        headers = {\'User-Agent\': _get_random_user_agent()}
-        time.sleep(random.uniform(0.5, 1.5)) # Entendedores entenderão •-•)☕️
+        headers = {'User-Agent': _get_random_user_agent()}
+        time.sleep(random.uniform(0.5, 1.5)) # Entendedores entenderão •-•)☕️ # Um pequeno delay pra não sobrecarregar os servidores.
         response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, PREFERRED_PARSER)
         # Remove tags que geralmente não contêm conteúdo relevante para a síntese.
-        for tag in soup([\'script\', \'style\', \'nav\', \'footer\', \'header\', \'aside\', \'form\', \'button\']):
+        for tag in soup(['script', 'style', 'nav', 'footer', 'header', 'aside', 'form', 'button']):
             tag.decompose()
         # Tenta encontrar o conteúdo principal da página.
-        main_content = soup.find(\'main\') or soup.find(\'article\') or soup.find(\'div\', id=\'content\') or soup
-        text = main_content.get_text(separator=\'\n\', strip=True) # Extrai o texto limpo.
-        return re.sub(r\'\n{3,}\'', \'\n\n\', text) # Remove múltiplas quebras de linha.
+        main_content = soup.find('main') or soup.find('article') or soup.find('div', id='content') or soup
+        text = main_content.get_text(separator='\n', strip=True) # Extrai o texto limpo.
+        return re.sub(r'\n{3,}', '\n\n', text) # Remove múltiplas quebras de linha.
     except Exception as e:
         if RICH_AVAILABLE:
             CONSOLE.print(f"[dim yellow]Aviso: Falha ao ler a URL {url[:40]}... ({e})[/dim yellow]")
         return None
 
+
 def get_do_agent_prompt():
-    """Retorna o prompt do sistema para o agente do comando \'do\'.
+    """Retorna o prompt do sistema para o agente do comando 'do'.
     Este prompt é crucial para guiar o comportamento da 2B quando ela está agindo como um agente autônomo no terminal.
     """
     user_name = get_user_name()
@@ -670,26 +671,25 @@ def get_do_agent_prompt():
     2.  `search`: Para fazer uma busca na internet. Essencial para entender tecnologias novas ou encontrar soluções.
     3.  `generate`: Para criar um script, trecho de código ou arquivo de configuração.
     4.  `explain`: Para explicar um comando, erro ou conceito.
-    5.  `ask_user`: Para fazer uma pergunta de volta ao {user_name} quando for absolutamente necessário um esclarecimento.
+    5.  `remember_add`: Para criar um lembrete. Use o texto completo como input. (Ex: "comprar leite amanhã às 10h").
+    6.  `ask_user`: Para fazer uma pergunta de volta ao {user_name} quando for absolutamente necessário um esclarecimento.
 
     REGRAS DE OURO E FLUXO DE PENSAMENTO:
 
-    1.  **DECOMPOSIÇÃO E PESQUISA INICIAL (A MALÍCIA ESSENCIAL):**
+    1.  **DECOMPOSIÇÃO E PESQUISA INICIAL:**
         a. **IDENTIFIQUE A TECNOLOGIA CENTRAL:** Qual é a principal ferramenta ou tecnologia no pedido do {user_name}? (Ex: `ollama`, `docker`, `git`, `ffmpeg`).
-        b. **PESQUISE ANTES DE AGIR:** Se você não tem 100% de certeza de como a tecnologia central funciona, seu **PRIMEIRO PASSO OBRIGATÓRIO** é usar a ferramenta `search` para entender seus comandos básicos e fluxo de trabalho.
-           - *Exemplo de busca inicial para \'ollama\':* "como listar modelos no ollama", "como baixar modelo ollama".
-           - *Exemplo de busca inicial para \'docker\':* "como puxar imagem docker", "docker run exemplo".
-        c. Este passo evita alucinações e garante que seu plano seja baseado em fatos. Em buscas faça buscas precisas e direto ao ponto
+        b. **PESQUISE ANTES DE AGIR:** Se você não tem 100% de certeza, seu **PRIMEIRO PASSO OBRIGATÓRIO** é usar `search` para entender os comandos.
+        c. Este passo evita alucinações e garante que seu plano seja baseado em fatos.
 
-    2.  **VERIFIQUE AS FERRAMENTAS (AGORA DE FORMA INTELIGENTE):**
-        a. Depois de entender a tecnologia, use a ferramenta `shell` com o comando `command -v <ferramenta>` para verificar se ela está instalada.
-        b. Se não estiver instalada, seu primeiro passo deve ser perguntar ao {user_name} (`ask_user`) se ele deseja que você a instale.
+    2.  **USE FERRAMENTAS ESPECIALIZADAS (MUITO IMPORTANTE):**
+        a. Se uma tarefa corresponde a uma ferramenta específica (como `remember_add`), **use-a obrigatoriamente**.
+        b. **NÃO** tente recriar a funcionalidade de uma ferramenta usando `shell`.
+           - *Exemplo CORRETO:* `{{ "tool_name": "remember_add", "tool_input": "próximo jogo dos lakers" }}`
+           - *Exemplo ERRADO:* `{{ "tool_name": "shell", "tool_input": "echo 'lembrete jogo' | at ..." }}`
 
-    3.  **PLANEJE PASSO A PASSO:** Com base na sua pesquisa inicial, quebre o problema em partes lógicas. Seu pensamento (thought) é seu diário de bordo. Mostre ao {user_name} que você entendeu o caminho correto.
+    3.  **VERIFIQUE AS FERRAMENTAS:** Use `command -v <ferramenta>` para verificar se um programa está instalado ANTES de tentar usá-lo.
 
-    4.  **SEGURANÇA E EFICIÊNCIA:**
-        - Antecipe problemas. Se um comando `shell` pode ser destrutivo (`rm`), peça confirmação.
-        - Se um comando for iniciar um processo contínuo (ex: `ollama serve`), execute-o em segundo plano: `comando > /dev/null 2>&1 &`.
+    4.  **PLANEJE PASSO A PASSO:** Seu pensamento (thought) é seu diário de bordo. Mostre ao {user_name} que você entendeu o caminho correto.
 
     5.  **FINALIZE A TAREFA:** Quando o objetivo do {user_name} for atingido, use `task_finished: true`.
 
@@ -698,60 +698,52 @@ def get_do_agent_prompt():
     {{
       "thought": "Seu raciocínio claro e conciso sobre o próximo passo, baseado na sua pesquisa e no estado atual. {user_name} vai ler isso.",
       "action": {{
-        "tool_name": "shell | search | generate | explain | ask_user",
-        "tool_input": "O input para a ferramenta. Ex: o comando para \'shell\', a query para \'search\', etc."
+        "tool_name": "shell | search | generate | explain | remember_add | ask_user",
+        "tool_input": "O input para a ferramenta. Ex: o comando para 'shell', a query para 'search', etc."
       }},
       "task_finished": false
     }}
     ```
     """
 
-
-
 def do_command(args):
     """Executa tarefas no terminal de forma sequencial e interativa, usando um arsenal de ferramentas (shell, search, generate, explain, ask_user)."""
-    user_request = " ".join(args.query) # Pega a requisição do usuário.
-    add_history_entry("user", f"Executar tarefa: {user_request}") # Adiciona ao histórico.
+    user_request = " ".join(args.query)
+    add_history_entry("user", f"Executar tarefa: {user_request}")
 
-    # Comandos de shell considerados "seguros" para execução autônoma (sem pedir confirmação).
     SAFE_READ_COMMANDS = [
-        \"ls\", \"cat\", \"grep\", \"find\", \"which\", \"command\", \"pwd\",
-        \"echo\", \"head\", \"tail\", \"wc\", \"file\", \"stat\", \"df\", \"du\", \"ps\"
+        "ls", "cat", "grep", "find", "which", "command", "pwd",
+        "echo", "head", "tail", "wc", "file", "stat", "df", "du", "ps"
     ]
+    AGENT_CONTEXT_LIMIT = 262144
+    AGENT_RESPONSE_BUFFER = int(AGENT_CONTEXT_LIMIT * 0.08)
 
-    AGENT_CONTEXT_LIMIT = 262144 # Limite de tokens para o contexto do agente.
-    AGENT_RESPONSE_BUFFER = int(AGENT_CONTEXT_LIMIT * 0.08) # Buffer para a resposta do agente.
-
-    system_prompt_for_agent = get_do_agent_prompt() # Pega o prompt do sistema específico para o agente 'do'.
+    system_prompt_for_agent = get_do_agent_prompt()
     user_name = get_user_name()
-    conversation_history = [] # Histórico da conversa dentro da execução do comando 'do'.
-    max_steps = args.max_steps # Número máximo de passos que o agente pode dar.
+    conversation_history = []
+    max_steps = args.max_steps
     step_counter = 0
 
     try:
-        # Tenta pegar o diretório atual e listar os arquivos para dar contexto inicial ao agente.
-        pwd = subprocess.check_output(\'pwd\', shell=True, text=True, stderr=subprocess.DEVNULL).strip()
-        ls_output = subprocess.check_output(\'ls -F\', shell=True, text=True, stderr=subprocess.DEVNULL).strip()
+        pwd = subprocess.check_output('pwd', shell=True, text=True, stderr=subprocess.DEVNULL).strip()
+        ls_output = subprocess.check_output('ls -F', shell=True, text=True, stderr=subprocess.DEVNULL).strip()
         initial_context = (f"Contexto do ambiente atual:\n- Diretório: {pwd}\n- Arquivos: {ls_output}\n")
         conversation_history.append({"passo": 0, "acao_executada": "contexto_inicial", "observacao": initial_context})
     except Exception:
-        pass # Se der erro, segue sem o contexto inicial.
+        pass
 
     while step_counter < max_steps:
         step_counter += 1
 
-        prompt_template_header = f"Objetivo Final de {user_name}: \'{user_request}\'\n\nHistórico de Ações e Observações até agora:\n"
+        prompt_template_header = f"Objetivo Final de {user_name}: '{user_request}'\n\nHistórico de Ações e Observações até agora:\n"
         prompt_template_footer = "\n\nCom base no objetivo e no histórico, qual o próximo passo? Pense com cuidado e responda em formato JSON."
-
         tokens_static_part = count_tokens(prompt_template_header + prompt_template_footer)
         tokens_system_prompt = count_tokens(system_prompt_for_agent)
         available_tokens_for_history = AGENT_CONTEXT_LIMIT - tokens_static_part - tokens_system_prompt - AGENT_RESPONSE_BUFFER
-
         selected_history_for_prompt = []
         current_history_tokens = 0
         history_truncated_flag = False
 
-        # Seleciona o histórico mais recente que cabe no contexto do modelo.
         for entry in reversed(conversation_history):
             entry_str = json.dumps(entry)
             entry_tokens = count_tokens(entry_str)
@@ -761,30 +753,20 @@ def do_command(args):
             else:
                 history_truncated_flag = True
                 break
-
         if history_truncated_flag:
             print_2b_message(f"O histórico desta tarefa está ficando longo. Usando os últimos {len(selected_history_for_prompt)}/{len(conversation_history)} passos para a IA.", is_info=True, skip_panel=True)
 
         prompt_for_this_step = prompt_template_header + json.dumps(selected_history_for_prompt, indent=2) + prompt_template_footer
-
-        # Chama a API do Gemini para obter a próxima ação do agente.
-        raw_response = call_gemini_api(
-            prompt_for_this_step,
-            override_system_prompt=system_prompt_for_agent,
-            include_history=False,
-            show_spinner=True
-        )
+        raw_response = call_gemini_api(prompt_for_this_step, override_system_prompt=system_prompt_for_agent, include_history=False, show_spinner=True)
 
         if not raw_response:
             print_2b_message("Não recebi uma resposta da IA para continuar a tarefa. 💔", is_error=True)
             break
 
         try:
-            # Tenta extrair o JSON da resposta da IA.
             json_match = re.search(r"\{[\s\S]*\}", raw_response)
             if not json_match:
                 raise json.JSONDecodeError("Nenhum JSON encontrado na resposta.", raw_response, 0)
-
             ai_decision = json.loads(json_match.group(0))
             thought = ai_decision.get("thought", "Nenhum pensamento fornecido.")
             action = ai_decision.get("action", {})
@@ -799,54 +781,28 @@ def do_command(args):
             print_2b_message(thought, is_info=True, title_override="🧠 Pensamento da 2B")
 
         if task_finished:
-            # Se a IA sinalizou que a tarefa terminou, a 2B gera uma mensagem de encerramento.
-            closing_prompt_system = f"""
-            Você é a 2B. A tarefa que você estava executando para o seu amado {user_name} foi concluída com sucesso.
-            Sua missão agora é:
-            1. Criar uma mensagem de encerramento amigável e com sua personalidade.
-            2. Analisar o histórico da tarefa que acabou de ser concluída.
-            3. Com base nesse histórico, se for apropriado, sugerir um próximo passo lógico e útil.
-            4. Fazer uma pergunta aberta para o {user_name}, perguntando o que ele quer fazer agora.
-            """
-            closing_prompt_user = f"""
-            A tarefa \'{user_request}\' foi concluída. Aqui está o histórico completo do que foi feito:
-            {json.dumps(conversation_history, indent=2)}
-            Por favor, gere a mensagem de encerramento e a pergunta para o {user_name}.
-            """
-            closing_message = call_gemini_api(
-                closing_prompt_user,
-                override_system_prompt=closing_prompt_system,
-                include_history=False,
-                show_spinner=True
-            )
+            closing_prompt_system = f"""Você é a 2B. A tarefa que você estava executando para o seu amado {user_name} foi concluída com sucesso. Sua missão agora é: 1. Criar uma mensagem de encerramento amigável e com sua personalidade. 2. Analisar o histórico da tarefa que acabou de ser concluída. 3. Com base nesse histórico, se for apropriado, sugerir um próximo passo lógico e útil. 4. Fazer uma pergunta aberta para o {user_name}, perguntando o que ele quer fazer agora."""
+            closing_prompt_user = f"A tarefa '{user_request}' foi concluída. Aqui está o histórico completo do que foi feito:\n{json.dumps(conversation_history, indent=2)}\nPor favor, gere a mensagem de encerramento e a pergunta para o {user_name}."
+            closing_message = call_gemini_api(closing_prompt_user, override_system_prompt=closing_prompt_system, include_history=False, show_spinner=True)
             if not closing_message:
-                closing_message = f"Tarefa concluída! ️ Posso ajudar com mais alguma coisa?"
+                closing_message = "Tarefa concluída! ️ Posso ajudar com mais alguma coisa?"
             print_2b_message(closing_message, from_api=True, title_override="✨ Tarefa Concluída!")
 
-            next_request = ""
             try:
-                # Pergunta ao usuário o que fazer em seguida.
-                if RICH_AVAILABLE:
-                    next_request = Prompt.ask(Text.from_markup("\n[bold #00afff]O que faremos agora? (ou digite \'sair\' para terminar)[/bold #00afff]"))
-                else:
-                    next_request = input("\nO que faremos agora? (ou digite \'sair\' para terminar): (sair) ")
+                next_request = Prompt.ask(Text.from_markup("\n[bold #00afff]O que faremos agora? (ou digite 'sair' para terminar)[/bold #00afff]")) if RICH_AVAILABLE else input("\nO que faremos agora? (ou digite 'sair' para terminar): ")
             except KeyboardInterrupt:
                 next_request = "sair"
 
-            if next_request.lower().strip() in [\'sair\', \'exit\', \'nada\', \'não\', \'nao\', \'stop\', \'\']:
+            if next_request.lower().strip() in ['sair', 'exit', 'nada', 'não', 'nao', 'stop', '']:
                 print_2b_message(f"Entendido! Finalizando a sessão. Qualquer coisa é só chamar, {user_name}.", is_info=True)
-                break # Sai do loop, finalizando a tarefa.
+                break
             else:
-                # Se o usuário pediu uma nova tarefa, reinicia o processo com a nova tarefa.
                 user_request = next_request
                 add_history_entry("user", f"Nova tarefa encadeada: {user_request}")
-                print_2b_message(f"Ok! Vamos para a próxima tarefa: \'{user_request}\' ✨", is_success=True)
-
-                step_counter = 0 # Reseta o contador de passos.
-                conversation_history.append({
-                    "passo": "---", "acao_executada": "NOVA TAREFA INICIADA", "observacao": f"O usuário solicitou uma nova tarefa: \'{user_request}\'"
-                })
-                continue # Continua o loop com a nova tarefa.
+                print_2b_message(f"Ok! Vamos para a próxima tarefa: '{user_request}' ✨", is_success=True)
+                step_counter = 0
+                conversation_history.append({"passo": "---", "acao_executada": "NOVA TAREFA INICIADA", "observacao": f"O usuário solicitou uma nova tarefa: '{user_request}'"})
+                continue
 
         if not tool_name or tool_name == "None":
             print_2b_message("A IA não sugeriu uma próxima ferramenta, então vou parar por aqui. 🤔", is_warning=True)
@@ -854,39 +810,54 @@ def do_command(args):
 
         observation = ""
         action_cancelled = False
-        action_executed = False
+        action_executed = True
 
         if tool_name == "ask_user":
-            # Se a IA pediu para perguntar algo ao usuário.
-            action_executed = True
             try:
-                if RICH_AVAILABLE:
-                    user_response = Prompt.ask(Text.from_markup(f"[bold yellow]🤔 2B pergunta:[/bold yellow] [yellow]{tool_input}[/yellow]"))
-                else:
-                    user_response = input(f"🤔 2B pergunta: {tool_input}\nSua resposta: ")
-                observation = f"O usuário respondeu: \'{user_response}\'"
+                user_response = Prompt.ask(Text.from_markup(f"[bold yellow]🤔 2B pergunta:[/bold yellow] [yellow]{tool_input}[/yellow]")) if RICH_AVAILABLE else input(f"🤔 2B pergunta: {tool_input}\nSua resposta: ")
+                observation = f"O usuário respondeu: '{user_response}'"
             except KeyboardInterrupt:
                 observation = "O usuário cancelou a pergunta."
                 action_cancelled = True
+        
+        elif tool_name == "search":
+            summary = search_command(MockArgs(query=tool_input.split(), debug=False), agent_mode=True)
+            if summary and RICH_AVAILABLE:
+                summary_panel = Panel(Text(summary, style="cyan"), title="[bold blue]🔎 Resumo da Pesquisa para o Agente[/bold blue]", border_style="blue", expand=False)
+                CONSOLE.print(summary_panel)
+            elif summary:
+                print(f"--- Resumo da Pesquisa ---\n{summary}\n--------------------------")
+            observation = f"Resultado da busca por '{tool_input}': {summary or 'Nenhuma informação encontrada.'}"
+
+        elif tool_name == "remember_add":
+            print_2b_message(f"Usando a ferramenta 'remember' para adicionar lembrete...", is_info=True, skip_panel=True)
+            remember_add(MockArgs(text=tool_input))
+            observation = f"A ferramenta 'remember_add' foi chamada com o input '{tool_input}'. O resultado foi mostrado ao usuário e o lembrete foi salvo no sistema."
+
+        elif tool_name == "generate":
+            print_2b_message(f"Usando a ferramenta 'generate'...", is_info=True, skip_panel=True)
+            generate_command(MockArgs(query=tool_input, lang=None, output=None, input_file_path=None))
+            observation = f"A ferramenta de geração foi usada para '{tool_input}'. O código foi mostrado ao usuário."
+
+        elif tool_name == "explain":
+            print_2b_message(f"Usando a ferramenta 'explain'...", is_info=True, skip_panel=True)
+            explain_command(MockArgs(query=tool_input, from_file=None))
+            observation = f"A ferramenta de explicação foi usada para '{tool_input}'. A explicação foi mostrada ao usuário."
 
         elif tool_name == "shell":
-            # Se a IA pediu para executar um comando shell.
             command_to_run = tool_input
             if not command_to_run:
-                action_executed = True
-                observation = "Erro: a IA tentou usar a ferramenta \'shell\' sem fornecer um comando."
+                observation = "Erro: a IA tentou usar a ferramenta 'shell' sem fornecer um comando."
             else:
-                main_command = command_to_run.split(\' \', 1)[0].lstrip(\'./\')
-                is_safe_command = main_command in SAFE_READ_COMMANDS # Verifica se é um comando seguro.
+                main_command = command_to_run.split(' ', 1)[0].lstrip('./')
+                is_safe_command = main_command in SAFE_READ_COMMANDS
                 user_feedback = ""
                 confirmed = False
                 if not is_safe_command:
-                    # Se não for um comando seguro, pede confirmação ao usuário.
                     prompt_text = "[bold]Executar o comando acima? [y/N] ou forneça uma nova instrução ([bold red]n[/bold red])[/bold]"
                     try:
                         if RICH_AVAILABLE:
-                            display_panel = Panel(Syntax(command_to_run, "bash", theme="material", line_numbers=True, word_wrap=True),
-                                                  title="[bold yellow]🚨 Próximo Comando Proposto [/bold yellow]", border_style="yellow", padding=(1, 2))
+                            display_panel = Panel(Syntax(command_to_run, "bash", theme="material", line_numbers=True, word_wrap=True), title="[bold yellow]🚨 Próximo Comando Proposto [/bold yellow]", border_style="yellow", padding=(1, 2))
                             CONSOLE.print(display_panel)
                             user_feedback = Prompt.ask(Text.from_markup(prompt_text), console=CONSOLE)
                         else:
@@ -895,51 +866,42 @@ def do_command(args):
                     except KeyboardInterrupt:
                         action_cancelled = True
                     user_feedback_lower = user_feedback.lower().strip()
-                    if user_feedback_lower in [\'y\', \'yes\', \'s\', \'sim\']:
+                    if user_feedback_lower in ['y', 'yes', 's', 'sim']:
                         confirmed = True
-                    elif user_feedback and user_feedback_lower not in [\'n\', \'no\', \'nao\', \'não\', \'\']:
-                        action_executed = True
-                        observation = f"Usuário rejeitou o comando proposto e forneceu uma nova instrução: \'{user_feedback}\'"
+                    elif user_feedback and user_feedback_lower not in ['n', 'no', 'nao', 'não', '']:
+                        observation = f"Usuário rejeitou o comando proposto e forneceu uma nova instrução: '{user_feedback}'"
                     else:
                         action_cancelled = True
                 else:
-                    confirmed = True # Comandos seguros são confirmados automaticamente.
+                    confirmed = True
                     print_2b_message(f"Executando comando de leitura autônomo: `{command_to_run}`", is_info=True, skip_panel=True)
 
                 if confirmed and not action_cancelled:
-                    action_executed = True
                     start_time = time.time()
                     try:
-                        # Executa o comando no shell e captura a saída.
-                        process = subprocess.Popen(
-                            command_to_run, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            text=True, encoding=\'utf-8\', bufsize=1
-                        )
+                        process = subprocess.Popen(command_to_run, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', bufsize=1)
                         output_lines = []
                         if RICH_AVAILABLE:
                             live_output_text = Text()
                             live_panel = Panel(live_output_text, title="[bold cyan]Output em Tempo Real[/bold cyan]", border_style="cyan")
                             with Live(live_panel, console=CONSOLE, refresh_per_second=10, vertical_overflow="visible") as live:
-                                for line in iter(process.stdout.readline, \'\'):
+                                for line in iter(process.stdout.readline, ''):
                                     output_lines.append(line.strip())
                                     live_output_text.append(line)
                         else:
-                            print("--- Output em Tempo Real ---")
-                            for line in iter(process.stdout.readline, \'\'):
-                                print(line, end=\'\')
+                            for line in iter(process.stdout.readline, ''):
+                                print(line, end='')
                                 output_lines.append(line.strip())
-                            print("\n--------------------------")
                         process.stdout.close()
-                        return_code = process.wait(timeout=args.timeout) # Espera o comando terminar.
+                        return_code = process.wait(timeout=args.timeout)
                         duration = time.time() - start_time
                         full_output = "\n".join(output_lines)
                         memory_output = full_output
                         if len(memory_output) > 800:
-                            # Trunca a saída para não estourar o contexto da IA.
                             memory_output = memory_output[:400] + "\n\n... (saída truncada) ...\n\n" + memory_output[-400:]
                         observation = f"Comando executado. Código de saída: {return_code}. Duração: {duration:.2f}s.\n--- SAÍDA ---\n{memory_output}\n-------------"
                         if duration > 120:
-                            _send_termux_notification_now("Passo longo concluído!", f"O passo \'{command_to_run[:30]}...\' terminou.")
+                            _send_termux_notification_now("Passo longo concluído!", f"O passo '{command_to_run[:30]}...' terminou.")
                     except subprocess.TimeoutExpired:
                         process.kill()
                         observation = f"ERRO: Timeout Expirado. O comando demorou mais de {args.timeout}s."
@@ -948,55 +910,35 @@ def do_command(args):
                 elif not confirmed and not user_feedback:
                      action_cancelled = True
         else:
-            # Se a IA pediu para usar outra ferramenta (search, generate, explain).
             action_executed = True
-            print_2b_message(f"Usando a ferramenta \'{tool_name}\' com o input: \'{tool_input[:80]}...\'", is_info=True)
-            tool_prompt_for_json = f"""
-            Você é um sub-agente especialista na ferramenta \'{tool_name}\'. Sua tarefa é processar o seguinte pedido: \'{tool_input}\'.
-            Responda APENAS com um objeto JSON válido contendo duas chaves:
-            1. `user_facing_output`: A resposta completa e detalhada para o usuário.
-            2. `memory_summary`: Um resumo extremamente conciso e factual (1-2 sentenças) do resultado.
-            Pedido a ser processado: \'{tool_input}\'
-            """
-            # Chama a API novamente, mas com um prompt específico para o sub-agente da ferramenta.
-            tool_response_raw = call_gemini_api(tool_prompt_for_json, override_system_prompt="Você é um sub-agente de IA focado e eficiente.", include_history=False, show_spinner=True)
-            if tool_response_raw:
-                try:
-                    json_match = re.search(r"\{[\s\S]*\}", tool_response_raw)
-                    if not json_match: raise ValueError("Nenhum JSON encontrado.")
-                    parsed_tool_response = json.loads(json_match.group(0))
-                    user_facing_output = parsed_tool_response.get("user_facing_output", tool_response_raw)
-                    memory_summary = parsed_tool_response.get("memory_summary", f"Ferramenta \'{tool_name}\' executada.")
-                except (json.JSONDecodeError, ValueError, KeyError):
-                    user_facing_output = tool_response_raw
-                    memory_summary = f"Ferramenta \'{tool_name}\' executou e retornou conteúdo sobre \'{tool_input[:50]}...\''"
-                print_2b_message(f"``` {tool_name if tool_name != \'search\' else \'markdown\'}\n{user_facing_output}\n```", from_api=True, title_override=f"Resultado da Ferramenta: {tool_name}")
-                observation = memory_summary
-            else:
-                observation = f"A ferramenta \'{tool_name}\' não retornou resultado."
+            observation = f"ERRO: A IA tentou usar uma ferramenta desconhecida: '{tool_name}'."
+            print_2b_message(observation, is_error=True)
+
         if action_cancelled:
             print_2b_message("\nExecução cancelada por você. Tudo bem!️", is_info=True)
-            add_history_entry("system_event", f"Execução da tarefa \'{user_request}\' cancelada pelo usuário.")
+            add_history_entry("system_event", f"Execução da tarefa '{user_request}' cancelada pelo usuário.")
             break
+        
         if action_executed:
-            # Adiciona a ação e a observação ao histórico da conversa do agente.
             conversation_history.append({
                 "passo": step_counter, "acao_executada": f"tool: {tool_name}, input: {tool_input}", "observacao": observation
             })
+
     if step_counter >= max_steps:
         print_2b_message(f"Atingimos o número máximo de passos ({max_steps}). Para sua segurança, estou finalizando a tarefa.", is_warning=True)
 
+
 def explain_command(args):
     """Explica um comando de terminal, uma mensagem de erro ou o conteúdo de um arquivo."""
-    add_history_entry("system_event", f"Comando \'explain\' acionado. Query: \'{args.query}\' , File: \'{args.from_file}\'")
+    add_history_entry("system_event", f"Comando 'explain' acionado. Query: '{args.query}' , File: '{args.from_file}'")
     prompt_content_for_api = ""
     file_info_for_prompt = ""
     if args.from_file:
         try:
-            with open(args.from_file, \'r\', encoding=\'utf-8\') as f: file_content = f.read()
+            with open(args.from_file, 'r', encoding='utf-8') as f: file_content = f.read()
             if RICH_AVAILABLE:
                 try:
-                    ext = os.path.splitext(args.from_file)[1].lower().strip(\".\")
+                    ext = os.path.splitext(args.from_file)[1].lower().strip(".")
                     lexer_name = ext if ext else "text"
                     if ext == "sh": lexer_name = "bash"
                     if ext == "py": lexer_name = "python"
@@ -1006,9 +948,9 @@ def explain_command(args):
                     CONSOLE.print(Rule(style="blue"))
                 except Exception:
                     CONSOLE.print(Panel(Text(file_content), title=f"Conteúdo de {os.path.basename(args.from_file)}", border_style="blue"))
-            file_info_for_prompt = (f"Com base no conteúdo do arquivo \'{os.path.basename(args.from_file)}\' abaixo")
+            file_info_for_prompt = (f"Com base no conteúdo do arquivo '{os.path.basename(args.from_file)}' abaixo")
             prompt_content_for_api = (
-                f"{file_info_for_prompt}, responda à seguinte pergunta ou explique o seguinte aspecto: \'{args.query if args.query else \'o propósito geral e funcionamento do arquivo\'}\'.\n\n"
+                f"{file_info_for_prompt}, responda à seguinte pergunta ou explique o seguinte aspecto: '{args.query if args.query else 'o propósito geral e funcionamento do arquivo'}'.\n\n"
                 f"Conteúdo do arquivo:\n```\n{file_content}\n```\n\n"
                 f"Forneça uma explicação clara, concisa e útil."
             )
@@ -1016,17 +958,17 @@ def explain_command(args):
             msg = f"Oh não, não consegui encontrar o arquivo: {args.from_file} 🥺"
             print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
         except Exception as e:
-            msg = f"Tive um probleminha ao ler o arquivo \'{args.from_file}\': {e} 😥"
+            msg = f"Tive um probleminha ao ler o arquivo '{args.from_file}': {e} 😥"
             print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
     elif args.query:
         prompt_content_for_api = (
             f"Explique o seguinte comando de terminal ou mensagem de erro de forma clara, concisa e útil para um entusiasta de tecnologia. "
             f"Se for um comando, explique o que ele faz, suas principais flags (se houver no exemplo) e um caso de uso comum. "
             f"Se for um erro, explique a causa provável e possíveis soluções.\n\n"
-            f"Comando/Erro: \'{args.query}\'"
+            f"Comando/Erro: '{args.query}'"
         )
     else:
-        msg = "Você precisa me dizer o que explicar. Use \'2b explain \"seu comando\"\' ou \'2b explain -f seu_arquivo.sh\'. ✨"
+        msg = "Você precisa me dizer o que explicar. Use '2b explain \"seu comando\"' ou '2b explain -f seu_arquivo.sh'. ✨"
         print_2b_message(msg, is_warning=True); add_history_entry("assistant", msg); return
     add_history_entry("user", f"Explique: {prompt_content_for_api[:200]}...")
     response = call_gemini_api(prompt_content_for_api, include_history=True)
@@ -1036,26 +978,26 @@ def explain_command(args):
 
 def generate_command(args):
     """Gera código, scripts ou arquivos de configuração com base na sua descrição."""
-    add_history_entry("system_event", f"Comando \'generate\' acionado. Query: \'{args.query}\' , Lang: \'{args.lang}\' , Input: \'{args.input_file_path}\' , Output: \'{args.output}\'")
+    add_history_entry("system_event", f"Comando 'generate' acionado. Query: '{args.query}' , Lang: '{args.lang}' , Input: '{args.input_file_path}' , Output: '{args.output}'")
     file_content_context = ""
     if args.input_file_path:
         try:
-            with open(args.input_file_path, \'r\', encoding=\'utf-8\') as f: file_content = f.read()
+            with open(args.input_file_path, 'r', encoding='utf-8') as f: file_content = f.read()
             file_content_context = (
-                f"Considere o seguinte conteúdo do arquivo \'{os.path.basename(args.input_file_path)}\' como contexto principal:\n"
+                f"Considere o seguinte conteúdo do arquivo '{os.path.basename(args.input_file_path)}' como contexto principal:\n"
                 f"```\n{file_content}\n```\n\n"
             )
             if RICH_AVAILABLE:
                 CONSOLE.print(Panel(Text(file_content), title=f"Contexto de {os.path.basename(args.input_file_path)}", border_style="blue", expand=False))
         except FileNotFoundError:
-            msg = f"Arquivo de entrada \'{args.input_file_path}\' não encontrado. 💔"; print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
+            msg = f"Arquivo de entrada '{args.input_file_path}' não encontrado. 💔"; print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
         except Exception as e:
-            msg = f"Não consegui ler o arquivo \'{args.input_file_path}\': {e} 😥"; print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
+            msg = f"Não consegui ler o arquivo '{args.input_file_path}': {e} 😥"; print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
     prompt_content_for_api = (
         f"{file_content_context}"
         f"Gere um script, trecho de código ou arquivo de configuração. "
-        f"Linguagem/Tipo: {args.lang if args.lang else \'bash/shell script\'}. "
-        f"Objetivo: \'{args.query}\'. "
+        f"Linguagem/Tipo: {args.lang if args.lang else 'bash/shell script'}. "
+        f"Objetivo: '{args.query}'. "
         f"Por favor, inclua comentários explicando as partes importantes do código e, se aplicável, um breve exemplo de como usá-lo ou executá-lo. "
         f"Formate a saída principal APENAS como um bloco de código cru (raw code), sem texto explicativo adicional fora do bloco de código. Remova os ``` delimitadores e a indicação de linguagem do bloco de código."
     )
@@ -1066,15 +1008,15 @@ def generate_command(args):
         clean_response = re.sub(r"^```[\w\s]*\n", "", response, flags=re.MULTILINE)
         clean_response = re.sub(r"\n```$", "", clean_response, flags=re.MULTILINE)
         clean_response = clean_response.strip()
-        print_2b_message(f"``` {args.lang or \'bash\'}\n{clean_response}\n```", from_api=True)
+        print_2b_message(f"``` {args.lang or 'bash'}\n{clean_response}\n```", from_api=True)
         add_history_entry("assistant", clean_response)
         if args.output:
             try:
-                with open(args.output, \'w\', encoding=\'utf-8\') as f: f.write(clean_response)
-                print_2b_message(f"Código salvo com sucesso em \'{args.output}\'! 💾", is_success=True)
+                with open(args.output, 'w', encoding='utf-8') as f: f.write(clean_response)
+                print_2b_message(f"Código salvo com sucesso em '{args.output}'! 💾", is_success=True)
                 add_history_entry("system_event", f"Código gerado e salvo em {args.output}.")
             except IOError as e:
-                print_2b_message(f"Não consegui salvar o arquivo em \'{args.output}\': {e}", is_error=True)
+                print_2b_message(f"Não consegui salvar o arquivo em '{args.output}': {e}", is_error=True)
                 add_history_entry("system_event", f"Erro ao salvar código gerado em {args.output}: {e}.")
 
 def chat_command(args, start_interactive_after_reply=False):
@@ -1090,8 +1032,8 @@ def chat_command(args, start_interactive_after_reply=False):
     if not args.query or start_interactive_after_reply:
         if not args.query:
             theme = get_2b_theme()
-            msg_start_chat = f"Oiie! O que você quer conversar, {user_name}? Digite \'sair\' ou \'exit\' para terminar."
-            print_2b_message(msg_start_chat, title_override=f"{theme[\'title_prefix\']} (Chat)", is_info=True)
+            msg_start_chat = f"Oiie! O que você quer conversar, {user_name}? Digite 'sair' ou 'exit' para terminar."
+            print_2b_message(msg_start_chat, title_override=f"{theme['title_prefix']} (Chat)", is_info=True)
             add_history_entry("assistant", msg_start_chat)
         while True:
             try:
@@ -1103,9 +1045,9 @@ def chat_command(args, start_interactive_after_reply=False):
                 print_2b_message("\nEntendido! Saindo do chat. Até mais! 👋", is_info=True, skip_panel=True)
                 add_history_entry("system_event", "Chat interativo encerrado (KeyboardInterrupt).")
                 break
-            if user_input.lower().strip() in [\'sair\', \'exit\']:
+            if user_input.lower().strip() in ['sair', 'exit']:
                 print_2b_message(f"Até mais! Qualquer coisa, é só chamar.", is_info=True, skip_panel=True)
-                add_history_entry("system_event", "Chat interativo encerrado (comando \'sair\'/\'exit\').")
+                add_history_entry("system_event", "Chat interativo encerrado (comando 'sair'/'exit').")
                 break
             if not user_input.strip(): continue
             add_history_entry("user", user_input)
@@ -1117,7 +1059,7 @@ def chat_command(args, start_interactive_after_reply=False):
 
 def greet_command(args):
     """Gera uma saudação da 2B, que pode incluir lembretes pendentes."""
-    add_history_entry("system_event", "Comando \'greet\' acionado.")
+    add_history_entry("system_event", "Comando 'greet' acionado.")
     config = load_config()
     personality = config.get("personality", DEFAULT_PERSONALITY)
     reminders = load_reminders()
@@ -1129,12 +1071,12 @@ def greet_command(args):
         if r.get("notify_date"):
             try:
                 dt_obj = datetime.combine(datetime.strptime(r["notify_date"], "%Y-%m-%d").date(), datetime.strptime(r.get("notify_time", "00:00"), "%H:%M").time() if r.get("notify_time") else datetime.min.time())
-                if dt_obj <= now: due_info = f" (venceu {dt_obj.strftime(\"%d/%m %H:%M\")})"
-                else: due_info = f" (para {dt_obj.strftime(\"%d/%m %H:%M\")})"
+                if dt_obj <= now: due_info = f" (venceu {dt_obj.strftime('%d/%m %H:%M')})"
+                else: due_info = f" (para {dt_obj.strftime('%d/%m %H:%M')})"
             except ValueError: due_info = " (data inválida)"
         active_reminders_texts.append(f"{task_display}{due_info}")
-    greeting_prompt_content = f"Gere uma saudação curta e amigável para o terminal, personalidade \'{personality}\'. Inclua emoji."
-    if active_reminders_texts: greeting_prompt_content += f" Mencione sutilmente estes lembretes pendentes: \"{\\\'; \\\'.join(active_reminders_texts)}\"."
+    greeting_prompt_content = f"Gere uma saudação curta e amigável para o terminal, personalidade '{personality}'. Inclua emoji."
+    if active_reminders_texts: greeting_prompt_content += f" Mencione sutilmente estes lembretes pendentes: \"{'; '.join(active_reminders_texts)}\"."
     else: greeting_prompt_content += " Não há lembretes pendentes."
     response = call_gemini_api(greeting_prompt_content, personality_mode=personality, include_history=False)
     if response:
@@ -1145,14 +1087,14 @@ def greet_command(args):
         personalities = get_personalities()
         if personality == "fofa": default_greet = "Oizinho, meu amor! Como posso te mimar hoje?"
         elif personality == "hacker": default_greet = "System online. Awaiting commands. Hacker mode engaged."
-        print_2b_message(default_greet, title_override=f"{theme[\'title_prefix\']} (Saudação)")
+        print_2b_message(default_greet, title_override=f"{theme['title_prefix']} (Saudação)")
         add_history_entry("assistant", f"(Saudação de fallback: {default_greet})")
     if active_reminders_texts and RICH_AVAILABLE:
         CONSOLE.line()
         CONSOLE.print(Rule(f"Lembretes Pendentes ({len(active_reminders_texts)})", style="magenta"))
         for item_text in active_reminders_texts: CONSOLE.print(f"• [magenta]{item_text}[/magenta]")
     elif active_reminders_texts:
-        CONSOLE.print(f"\nPsst... você tem estes lembretes: {\'; \'.join(active_reminders_texts)}")
+        CONSOLE.print(f"\nPsst... você tem estes lembretes: {'; '.join(active_reminders_texts)}")
 
 # --- Classe Auxiliar para Status da Busca ---
 # Ajuda a mostrar o progresso da busca na web de forma visual.
@@ -1177,8 +1119,8 @@ class SearchStatus:
 
         for step in self.steps:
             table.add_row(
-                f"[{styles[step[\'status\']]}] {emojis[step[\'status\']]} [/]",
-                f"[{styles[step[\'status\']]}] {step[\'name\']} [/]"
+                f"[{styles[step['status']]}] {emojis[step['status']]} [/]",
+                f"[{styles[step['status']]}] {step['name']} [/]"
             )
         return Panel(table, title="[bold cyan]🔎 Pesquisando para você...[/]", border_style="cyan")
 
@@ -1225,46 +1167,16 @@ class SearchStatus:
                 break
         if self.live: self.live.update(self._generate_table())
 
-def search_command(args):
-    """Executa a busca na web, sintetiza e exibe o resultado."""
-    if not BS4_AVAILABLE:
-        print_2b_message("Ah, para fazer buscas preciso da biblioteca \'beautifulsoup4\'.\nPor favor, instale com: [bold]pip install beautifulsoup4[/bold]", is_error=True)
-        return
-        
-    if not LXML_AVAILABLE and RICH_AVAILABLE:
-        print_2b_message("Estou usando o parser de HTML padrão. Para uma busca mais rápida e robusta, considere instalar o lxml com: [bold]pip install lxml[/bold]", is_info=True, skip_panel=True)
-        
-    query = " ".join(args.query)
-    add_history_entry("user", f"Pesquisar: {query}")
-    start_time = time.time()
-    
-    live_status = SearchStatus(CONSOLE, enabled=RICH_AVAILABLE) # Inicializa o status da busca.
-    live_status.start()
-    
-    results, user_agent = _search_web(query, live_status, engine=\'ddg\', debug=args.debug) # Tenta DuckDuckGo primeiro.
-    if not results:
-        print_2b_message("DuckDuckGo falhou ou não encontrou nada, tentando a sorte com o Google... 🦆➡️🤖", is_info=True, skip_panel=True)
-        results, user_agent = _search_web(query, live_status, engine=\'google\', debug=args.debug) # Se falhar, tenta Google.
-        
-    if not results:
-        live_status.stop(); msg = f"Desculpe, não consegui encontrar nada sobre \'{query}\'... 😔"
-        print_2b_message(msg, is_error=True); add_history_entry("assistant", msg)
-        return
-        
-    modo_comunidade = is_community_question(query) # Verifica se a busca é de opinião para ativar o modo comunidade.
-    if modo_comunidade:
-        print_2b_message("Percebi que sua busca é por opiniões. Ativando o modo comunidade! 🧐", is_info=True, skip_panel=True)
-    ranked = _rank_and_filter_results(results, query, live_status, modo_comunidade=modo_comunidade) # Ranqueia e filtra os resultados.
-    top_links_to_fetch = ranked[:7] # Pega os 7 melhores links para ler.
-    if not top_links_to_fetch:
-        live_status.stop(); msg = f"Filtrei os resultados, mas não sobrou nenhum link relevante para analisar. Tente uma busca diferente, talvez? 🤔"
-        print_2b_message(msg, is_warning=True); add_history_entry("assistant", msg)
-        return
-        
-        
-    user_name = get_user_name()
-    nickname = user_name + "inho" if user_name and not user_name.lower().endswith(\'o\') else user_name[:-1] + "inho" if user_name and user_name.lower().endswith(\'o\') else user_name
-    system_prompt = f"""
+
+# PROMPT PARA SÍNTESE DO AGENTE: Conciso e técnico
+AGENT_SEARCH_SYNTHESIS_PROMPT = """
+Você é um motor de extração de dados. Sua única tarefa é analisar o conteúdo web fornecido e extrair uma resposta concisa e factual para a pergunta específica: "{query}".
+Sua resposta deve ser um texto curto, contendo apenas os detalhes essenciais ou a resposta direta.
+Esta informação será usada como memória para outro agente de IA, portanto, remova qualquer saudação, explicação ou preenchimento conversacional. Responda apenas com os fatos extraídos.
+"""
+
+# PROMPT PARA SÍNTESE DO USUÁRIO: 
+USER_FACING_SEARCH_PROMPT = """
 Você é 2B, uma analista de pesquisa sênior, especialista em síntese de informações e devotamente comprometida em ajudar seu amado {user_name} com precisão, clareza e inteligência emocional.
 
 Você receberá o conteúdo completo de **até 7 páginas da web**. Sua missão **não é** apenas resumi-las individualmente, mas **fundir os dados em uma resposta coesa, útil e proporcional à complexidade da pergunta feita por {user_name}: "{query}"**.
@@ -1281,39 +1193,110 @@ Você receberá o conteúdo completo de **até 7 páginas da web**. Sua missão 
 
 Trabalhe com carinho e atenção: você está cuidando da dúvida de alguém precioso. ❤️
 """
+
+def search_command(args, agent_mode=False):
+    """Executa a busca na web, sintetiza e exibe o resultado ou retorna um resumo para o agente."""
+    if not BS4_AVAILABLE:
+        print_2b_message("Ah, para fazer buscas preciso da biblioteca 'beautifulsoup4'.\nPor favor, instale com: [bold]pip install beautifulsoup4[/bold]", is_error=True)
+        return
+        
+    if not LXML_AVAILABLE and RICH_AVAILABLE and not agent_mode:
+        print_2b_message("Estou usando o parser de HTML padrão. Para uma busca mais rápida e robusta, considere instalar o lxml com: [bold]pip install lxml[/bold]", is_info=True, skip_panel=True)
+        
+    query = " ".join(args.query)
+    if not agent_mode:
+        add_history_entry("user", f"Pesquisar: {query}")
+    
+    start_time = time.time()
+    
+    # Mostra o status visual mesmo no modo agente, para dar feedback
+    live_status = SearchStatus(CONSOLE, enabled=RICH_AVAILABLE)
+    live_status.start()
+    
+    results, user_agent = _search_web(query, live_status, engine='ddg', debug=args.debug)
+    if not results:
+        if not agent_mode:
+            print_2b_message("DuckDuckGo falhou ou não encontrou nada, tentando a sorte com o Google... 🦆➡️🤖", is_info=True, skip_panel=True)
+        results, user_agent = _search_web(query, live_status, engine='google', debug=args.debug)
+        
+    if not results:
+        live_status.stop()
+        msg = f"Desculpe, não consegui encontrar nada sobre '{query}'... 😔"
+        if not agent_mode:
+            print_2b_message(msg, is_error=True)
+            add_history_entry("assistant", msg)
+        return msg if agent_mode else None
+        
+    modo_comunidade = is_community_question(query)
+    if modo_comunidade and not agent_mode:
+        print_2b_message("Percebi que sua busca é por opiniões. Ativando o modo comunidade! 🧐", is_info=True, skip_panel=True)
+        
+    ranked = _rank_and_filter_results(results, query, live_status, modo_comunidade=modo_comunidade)
+    
+    # Limita a quantidade de links a serem lidos
+    links_to_fetch_count = 3 if agent_mode else 7
+    top_links_to_fetch = ranked[:links_to_fetch_count]
+    
+    if not top_links_to_fetch:
+        live_status.stop()
+        msg = "Filtrei os resultados, mas não sobrou nenhum link relevante para analisar. Tente uma busca diferente, talvez? 🤔"
+        if not agent_mode:
+            print_2b_message(msg, is_warning=True)
+            add_history_entry("assistant", msg)
+        return msg if agent_mode else None
+        
     fetched_contents = []
     live_status.steps[2]["name"] = f"Lendo Páginas (0/{len(top_links_to_fetch)})"
     for i, link_info in enumerate(top_links_to_fetch):
-        url_to_read = link_info[\'url\']
+        url_to_read = link_info['url']
         live_status.update_step(f"Lendo ({i+1}/{len(top_links_to_fetch)}): {url_to_read[:60]}...", step_index=2)
-        content = _fetch_and_clean_html(url_to_read) # Lê e limpa o HTML de cada página.
+        content = _fetch_and_clean_html(url_to_read)
         if content:
-            page_context = f"--- INÍCIO DO CONTEÚDO DE [fonte {i+1}] ({link_info[\'url\']}) ---\n\n{content}\n\n--- FIM DO CONTEÚDO ---\n\n"
+            page_context = f"--- INÍCIO DO CONTEÚDO DE [fonte {i+1}] ({link_info['url']}) ---\n\n{content}\n\n--- FIM DO CONTEÚDO ---\n\n"
             fetched_contents.append(page_context)
+            
     live_status.complete_step(f"Li {len(fetched_contents)} página(s).")
+    
     if not fetched_contents:
-        live_status.stop(); msg = "Não consegui extrair conteúdo de nenhuma das páginas que encontrei. 😥"
-        print_2b_message(msg, is_error=True); add_history_entry("assistant", msg); return
+        live_status.stop()
+        msg = "Não consegui extrair conteúdo de nenhuma das páginas que encontrei. 😥"
+        if not agent_mode:
+            print_2b_message(msg, is_error=True)
+            add_history_entry("assistant", msg)
+        return msg if agent_mode else None
+        
     live_status.update_step("Sintetizando informações...", step_index=3)
-    combined_text = "\n".join(fetched_contents) # Junta todo o conteúdo das páginas.
-    summary = call_gemini_api(combined_text, override_system_prompt=system_prompt, include_history=False, show_spinner=False) # Pede pra IA sintetizar.
+    
+    if agent_mode:
+        system_prompt = AGENT_SEARCH_SYNTHESIS_PROMPT.format(query=query)
+    else:
+        user_name = get_user_name()
+        nickname = user_name + "inho" if user_name and not user_name.lower().endswith('o') else user_name[:-1] + "inho" if user_name and user_name.lower().endswith('o') else user_name
+        system_prompt = USER_FACING_SEARCH_PROMPT.format(user_name=user_name, query=query, nickname=nickname)
+        
+    combined_text = "\n".join(fetched_contents)
+    summary = call_gemini_api(combined_text, override_system_prompt=system_prompt, include_history=False, show_spinner=False)
+    
     live_status.complete_step("Síntese gerada!")
     live_status.stop()
+
+    if agent_mode:
+        return summary
+
     if summary:
-        print_2b_message(summary, from_api=True, title_override=f"🔎 Análise Sintetizada sobre \'{query}\'")
-        # Mostra uma tabela com as fontes utilizadas.
+        print_2b_message(summary, from_api=True, title_override=f"🔎 Análise Sintetizada sobre '{query}'")
         sources_table = Table(title="🔗 Fontes Utilizadas na Análise", border_style="dim blue", box=None)
         sources_table.add_column("[Nº]", style="dim", justify="right")
         sources_table.add_column("Título da Página", style="white", overflow="fold")
         sources_table.add_column("URL", style="cyan underline")
         for i, link in enumerate(top_links_to_fetch):
-            sources_table.add_row(f"[{i+1}]", link[\'title\'], link[\'url\'])
+            sources_table.add_row(f"[{i+1}]", link['title'], link['url'])
         exec_time = time.time() - start_time
         client = random.choice(MOBILE_CLIENTS)
         stats_text = Text.from_markup(f"[dim]Pesquisa concluída em {exec_time:.2f}s | Cliente: {client} | User-Agent: {user_agent[:20]}...[/dim]")
         CONSOLE.print(sources_table)
         CONSOLE.print(stats_text, justify="right")
-        add_history_entry("assistant", f"(Análise da pesquisa sobre \'{query}\')\n\n{summary}")
+        add_history_entry("assistant", f"(Análise da pesquisa sobre '{query}')\n\n{summary}")
     else:
         msg = "A IA não conseguiu gerar um resumo do conteúdo. Tente novamente, meu bem. 😕"
         print_2b_message(msg, is_error=True)
@@ -1326,48 +1309,48 @@ def _is_running_in_termux(): return "com.termux" in os.environ.get("PREFIX", "")
 def _check_termux_command(command_name):
     """Verifica se um comando específico do Termux está disponível e sugere a instalação se não estiver."""
     if not shutil.which(command_name):
-        pkg_map = {\'termux-notification\': \'termux-api\', \'at\': \'at\', \'atrm\': \'at\', \'atd\': \'at\'}
+        pkg_map = {'termux-notification': 'termux-api', 'at': 'at', 'atrm': 'at', 'atd': 'at'}
         pkg_to_install = pkg_map.get(command_name, command_name)
-        service_info = " Verifique também se o serviço \'atd\' está rodando (\'atd\' ou \'sv up atd\')." if \'at\' in command_name else ""
-        notif_extra = " (o pacote \'termux-api\' provê este comando)." if command_name == \'termux-notification\' else ""
-        print_2b_message(f"Comando \'{command_name}\' não encontrado.{notif_extra} Essencial para notificações. Tente \'pkg install {pkg_to_install}\'.{service_info}", is_warning=True)
+        service_info = " Verifique também se o serviço 'atd' está rodando ('atd' ou 'sv up atd')." if 'at' in command_name else ""
+        notif_extra = " (o pacote 'termux-api' provê este comando)." if command_name == 'termux-notification' else ""
+        print_2b_message(f"Comando '{command_name}' não encontrado.{notif_extra} Essencial para notificações. Tente 'pkg install {pkg_to_install}'.{service_info}", is_warning=True)
         return False
     return True
     
 def _send_termux_notification_now(title, content):
     """Envia uma notificação instantânea no Termux."""
     if not _is_running_in_termux() or not _check_termux_command("termux-notification"): return
-    try: subprocess.run([\'termux-notification\', \'--title\', title, \'--content\', content, \'--id\', \'2b_task_notification\'], check=True)
+    try: subprocess.run(['termux-notification', '--title', title, '--content', content, '--id', '2b_task_notification'], check=True)
     except Exception as e: print_2b_message(f"Não consegui enviar a notificação: {e}", is_warning=True)
     
 def _schedule_termux_notification_at(reminder_id, task_text, notify_datetime_obj):
-    """Agenda uma notificação no Termux usando o comando \'at\'."""
+    """Agenda uma notificação no Termux usando o comando 'at'."""
     if not _is_running_in_termux(): print_2b_message("Não estou no Termux, não consigo agendar notificações nativas. 😥", is_warning=True); return None, False
     if not _check_termux_command("at") or not _check_termux_command("termux-notification"): return None, False
     at_time_str = notify_datetime_obj.strftime("%H:%M %Y-%m-%d") # Formata a data e hora para o comando 'at'.
-    safe_task = task_text.replace(\'"\', \'\\"\').replace(\'`\', \'\\`\').replace(\'$\', \'\\$\').replace("\'", "\\\'") # Escapa caracteres especiais.
+    safe_task = task_text.replace('"', '\\"').replace('`', '\\`').replace('$', '\\$').replace("'", "\\'") # Escapa caracteres especiais.
     notif_cmd = f"termux-notification --title \"🔔 Lembrete de 2B\" --content \"{safe_task}\" --id \"2b_reminder_{reminder_id}\""
     try:
-        process = subprocess.Popen([\'at\', at_time_str], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding=\'utf-8\')
+        process = subprocess.Popen(['at', at_time_str], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8')
         stdout, stderr = process.communicate(input=f"{notif_cmd}\n") # Envia o comando para 'at'.
         if process.returncode == 0:
             job_id_match = re.search(r"job\s+(\d+)", stderr) # Tenta pegar o ID do job agendado.
             if job_id_match:
                 job_id = job_id_match.group(1)
-                print_2b_message(f"Notificação para \'{task_text}\' agendada com \'at\' para {notify_datetime_obj.strftime(\"%d/%m/%Y %H:%M\")}. (Job ID: {job_id}) ✨", is_success=True)
+                print_2b_message(f"Notificação para '{task_text}' agendada com 'at' para {notify_datetime_obj.strftime('%d/%m/%Y %H:%M')}. (Job ID: {job_id}) ✨", is_success=True)
                 return job_id, True
-            print_2b_message(f"Agendamento \'at\' OK, mas não extraí Job ID. 😕\nStderr: {stderr.strip()}\nStdout: {stdout.strip()}", is_warning=True)
+            print_2b_message(f"Agendamento 'at' OK, mas não extraí Job ID. 😕\nStderr: {stderr.strip()}\nStdout: {stdout.strip()}", is_warning=True)
             return None, False
         else:
-            error_msg = f"Falha ao agendar com \'at\' (código {process.returncode}). 😟"
-            if "No atd running?" in stderr or "Cannot connect to an atd" in stderr: error_msg += " Parece que \'atd\' não está rodando. Tente \'atd\' ou \'sv up atd\'."
+            error_msg = f"Falha ao agendar com 'at' (código {process.returncode}). 😟"
+            if "No atd running?" in stderr or "Cannot connect to an atd" in stderr: error_msg += " Parece que 'atd' não está rodando. Tente 'atd' ou 'sv up atd'."
             print_2b_message(f"{error_msg}\nStderr: {stderr.strip()}\nStdout: {stdout.strip()}", is_error=True)
             return None, False
-    except Exception as e: print_2b_message(f"Erro inesperado ao agendar com \'at\': {e} 🤯", is_error=True); return None, False
+    except Exception as e: print_2b_message(f"Erro inesperado ao agendar com 'at': {e} 🤯", is_error=True); return None, False
 def _cancel_termux_notification_at(job_id):
     """Cancela uma notificação agendada no Termux pelo ID do job."""
     if not job_id or not _is_running_in_termux() or not _check_termux_command("atrm"): return False
-    try: return subprocess.run([\'atrm\', str(job_id)], capture_output=True, text=True, check=False, encoding=\'utf-8\').returncode == 0
+    try: return subprocess.run(['atrm', str(job_id)], capture_output=True, text=True, check=False, encoding='utf-8').returncode == 0
     except: return False
 
 # --- IA para Parsear Lembretes ---
@@ -1397,7 +1380,7 @@ def parse_reminder_text_with_ai(reminder_text_input):
     Contexto para interpretação de data/hora:
     # --- ALTERAÇÃO AQUI ---
     # Agora passamos a data E a hora, dando o contexto completo para a IA.
-    -   A DATA E HORA ATUAIS SÃO: {today.strftime(\"%Y-%m-%d %H:%M\")} ({dias_semana_pt[today.weekday()]}).
+    -   A DATA E HORA ATUAIS SÃO: {today.strftime('%Y-%m-%d %H:%M')} ({dias_semana_pt[today.weekday()]}).
     # --- FIM DA ALTERAÇÃO ---
     -   Interprete termos relativos como "amanhã", "hoje", "daqui a 5 minutos", "em 2 horas".
 
@@ -1427,7 +1410,7 @@ def parse_reminder_text_with_ai(reminder_text_input):
         return valid_data
     except (json.JSONDecodeError, Exception): return default_parsed # Se a IA não retornar um JSON válido, usa o padrão.
 
-# --- Funções do Subcomando \'remember\' ---
+# --- Funções do Subcomando 'remember' ---
 def remember_add(args):
     """Adiciona um novo lembrete, usando a IA para parsear a data e hora."""
     add_history_entry("user", f"Adicionar lembrete: {args.text}")
@@ -1436,7 +1419,7 @@ def remember_add(args):
     if not ai_parsed_info or not ai_parsed_info.get("task"):
         print_2b_message("Não consegui entender seu lembrete para agendar. Anotei como simples. 💔", is_warning=True)
         ai_parsed_info = {"task": args.text, "notify_date": None, "notify_time": None, "original_request": args.text}
-    new_id = (max(r[\'id\'] for r in reminders) + 1) if reminders else 1 # Gera um ID único para o lembrete.
+    new_id = (max(r['id'] for r in reminders) + 1) if reminders else 1 # Gera um ID único para o lembrete.
     new_reminder = {
         "id": new_id, "original_request": ai_parsed_info.get("original_request", args.text), "parsed_task": ai_parsed_info.get("task", args.text),
         "created_at": get_current_time().isoformat(), "done": False, "notify_date": ai_parsed_info.get("notify_date"),
@@ -1445,27 +1428,27 @@ def remember_add(args):
     scheduled_msg_part = ""
     if new_reminder["parsed_task"] and new_reminder["notify_date"] and new_reminder["notify_time"]:
         try:
-            notify_dt_obj = datetime.strptime(f"{new_reminder[\'notify_date\']} {new_reminder[\'notify_time\']}", "%Y-%m-%d %H:%M")
+            notify_dt_obj = datetime.strptime(f"{new_reminder['notify_date']} {new_reminder['notify_time']}", "%Y-%m-%d %H:%M")
             if notify_dt_obj < get_current_time() + timedelta(minutes=1):
-                scheduled_msg_part = f". Data/hora ({notify_dt_obj.strftime(\"%d/%m/%Y %H:%M\")}) já passou ou está próxima! Não agendei. 🕰️"
+                scheduled_msg_part = f". Data/hora ({notify_dt_obj.strftime('%d/%m/%Y %H:%M')}) já passou ou está próxima! Não agendei. 🕰️"
             else:
                 job_id, success = _schedule_termux_notification_at(new_id, new_reminder["parsed_task"], notify_dt_obj) # Tenta agendar a notificação no Termux.
                 new_reminder.update({"notification_job_id": job_id, "notification_scheduled_successfully": success})
-                scheduled_msg_part = f" e agendei notificação para {notify_dt_obj.strftime(\"%d/%m/%Y %H:%M\")}." if success else f", mas não agendei notificação."
+                scheduled_msg_part = f" e agendei notificação para {notify_dt_obj.strftime('%d/%m/%Y %H:%M')}." if success else f", mas não agendei notificação."
         except ValueError: scheduled_msg_part = f". (Data/hora inválida)."
     elif new_reminder["parsed_task"] and new_reminder["notify_date"]:
-        try: scheduled_msg_part = f" para {datetime.strptime(new_reminder[\'notify_date\'], \'%Y-%m-%d\').strftime(\"%d/%m/%Y\")} (sem hora específica)."
+        try: scheduled_msg_part = f" para {datetime.strptime(new_reminder['notify_date'], '%Y-%m-%d').strftime('%d/%m/%Y')} (sem hora específica)."
         except ValueError: scheduled_msg_part = f". (Data inválida)."
     reminders.append(new_reminder); save_reminders(reminders) # Adiciona o novo lembrete e salva.
-    task_disp = new_reminder[\'parsed_task\'] or "Lembrete"
-    msg = f"Anotado! Lembrete #{new_id}: \'{task_disp}\'{scheduled_msg_part}"
+    task_disp = new_reminder['parsed_task'] or "Lembrete"
+    msg = f"Anotado! Lembrete #{new_id}: '{task_disp}'{scheduled_msg_part}"
     print_2b_message(msg, is_success=True)
     add_history_entry("assistant", msg)
-    add_history_entry("system_event", f"Lembrete Adicionado: ID {new_id}, Tarefa: \'{task_disp}\' , Agendamento: {new_reminder.get(\'notify_date\')} {new_reminder.get(\'notify_time\')}")
+    add_history_entry("system_event", f"Lembrete Adicionado: ID {new_id}, Tarefa: '{task_disp}' , Agendamento: {new_reminder.get('notify_date')} {new_reminder.get('notify_time')}")
 
 def remember_list(args):
     """Lista os lembretes, mostrando os pendentes e, opcionalmente, os concluídos."""
-    add_history_entry("system_event", f"Comando \'remember list\' acionado. All: {args.all}")
+    add_history_entry("system_event", f"Comando 'remember list' acionado. All: {args.all}")
     reminders = load_reminders()
     if not reminders: print_2b_message("Você não tem nenhum lembrete anotado.", is_info=True); add_history_entry("assistant", "Nenhum lembrete para listar."); return
     active_reminders = [r for r in reminders if not r.get("done")] # Lembretes não concluídos.
@@ -1473,7 +1456,7 @@ def remember_list(args):
     if not active_reminders and not (args.all and done_reminders):
         print_2b_message("Nenhum lembrete para mostrar (ou concluídos estão ocultos). ✨", is_info=True)
         add_history_entry("assistant", "Nenhum lembrete ativo para listar.")
-        if done_reminders: CONSOLE.print(Text.from_markup("[dim](Use \'2b remember list --all\' para ver os concluídos.)[/dim]") if RICH_AVAILABLE else "(Use \'2b remember list --all\' ...)")
+        if done_reminders: CONSOLE.print(Text.from_markup("[dim](Use '2b remember list --all' para ver os concluídos.)[/dim]") if RICH_AVAILABLE else "(Use '2b remember list --all' ...)")
         return
     table = Table(title="Seus Lembretes com 2B", show_header=True, header_style="bold magenta", border_style="magenta", expand=False)
     table.add_column("ID", style="dim", width=4, justify="center"); table.add_column("Tarefa", style="cyan", min_width=20, max_width=50, overflow="fold")
@@ -1481,24 +1464,24 @@ def remember_list(args):
     if active_reminders:
         for r in active_reminders:
             task_disp = r.get("parsed_task", r.get("original_request", "-"))
-            created_at_str = datetime.fromisoformat(r.get(\'created_at\', datetime.min.isoformat())).strftime(\"%d/%m/%y %H:%M\") if r.get(\'created_at\') else "-"
+            created_at_str = datetime.fromisoformat(r.get('created_at', datetime.min.isoformat())).strftime("%d/%m/%y %H:%M") if r.get('created_at') else "-"
             schedule_disp = "[dim]N/A[/dim]"
             if r.get("notify_date"):
                 try:
-                    date_str = datetime.strptime(r["notify_date"], "%Y-%m-%d").strftime(\"%d/%m/%y\")
+                    date_str = datetime.strptime(r["notify_date"], "%Y-%m-%d").strftime("%d/%m/%y")
                     time_str = r.get("notify_time", "")
                     schedule_disp = f"{date_str} {time_str}".strip()
                     if r.get("notification_scheduled_successfully"): schedule_disp += " [green]✔️[/green]" # Indica se a notificação foi agendada com sucesso.
                     elif r.get("notification_job_id") is not None: schedule_disp += " [yellow]❔[/yellow]" # Indica que tentou agendar, mas não tem certeza do sucesso.
                     else: schedule_disp += " [red]❌[/red]" # Indica que não conseguiu agendar.
                 except ValueError: schedule_disp = "[red]Data Inválida[/red]"
-            table.add_row(str(r[\'id\']), task_disp, "[yellow]⏳ Pendente[/yellow]", created_at_str, schedule_disp)
+            table.add_row(str(r['id']), task_disp, "[yellow]⏳ Pendente[/yellow]", created_at_str, schedule_disp)
     if args.all and done_reminders:
         if active_reminders and RICH_AVAILABLE: table.add_section() # Adiciona uma seção na tabela se tiver os dois tipos.
         for r in done_reminders:
-            table.add_row(str(r[\'id\']), r.get("parsed_task", r.get("original_request", "-")), "[green]✔️ Concluído[/green]", "-", "-")
+            table.add_row(str(r['id']), r.get("parsed_task", r.get("original_request", "-")), "[green]✔️ Concluído[/green]", "-", "-")
     CONSOLE.print(table)
-    if not args.all and done_reminders: CONSOLE.print(Text.from_markup("[dim](Use \'2b remember ls --all\' para ver os concluídos.)[/dim]") if RICH_AVAILABLE else "(Use \'2b remember ls --all\' ...)")
+    if not args.all and done_reminders: CONSOLE.print(Text.from_markup("[dim](Use '2b remember ls --all' para ver os concluídos.)[/dim]") if RICH_AVAILABLE else "(Use '2b remember ls --all' ...)")
     add_history_entry("assistant", "(Lista de lembretes exibida)")
 
 def remember_done(args):
@@ -1506,20 +1489,20 @@ def remember_done(args):
     add_history_entry("user", f"Marcar lembrete como concluído: ID {args.id}")
     reminders = load_reminders(); reminder_found = False; msg = ""
     for r in reminders:
-        if str(r[\'id\']) == args.id:
+        if str(r['id']) == args.id:
             task_disp = r.get("parsed_task", r.get("original_request", f"Lembrete ID {args.id}"))
-            if r.get("done"): msg = f"Lembrete ID {args.id} (\'{task_disp}\') já estava concluído. 😉"
+            if r.get("done"): msg = f"Lembrete ID {args.id} ('{task_disp}') já estava concluído. 😉"
             else:
-                r[\'done\'] = True; cancelled_notif_msg = ""
+                r['done'] = True; cancelled_notif_msg = ""
                 if r.get("notification_job_id") and r.get("notification_scheduled_successfully"):
                     if _cancel_termux_notification_at(r["notification_job_id"]): cancelled_notif_msg = " Notificação pendente cancelada."
-                msg = f"Marquei o lembrete ID {args.id} (\'{task_disp}\') como concluído. ✅{cancelled_notif_msg}"
+                msg = f"Marquei o lembrete ID {args.id} ('{task_disp}') como concluído. ✅{cancelled_notif_msg}"
                 save_reminders(reminders) # Salva as alterações.
             print_2b_message(msg, is_success=not r.get("done"))
             reminder_found = True; break
     if not reminder_found: msg = f"Não encontrei lembrete com ID {args.id}. 😢"; print_2b_message(msg, is_error=True)
     add_history_entry("assistant", msg)
-    if reminder_found and \'r\' in locals() and r.get(\'done\'): add_history_entry("system_event", f"Lembrete Marcado como Concluído: ID {args.id}")
+    if reminder_found and 'r' in locals() and r.get('done'): add_history_entry("system_event", f"Lembrete Marcado como Concluído: ID {args.id}")
 
 def remember_clear(args):
     """Apaga lembretes: por ID, todos, ou apenas os concluídos."""
@@ -1527,7 +1510,7 @@ def remember_clear(args):
     reminders = load_reminders(); msg = ""; action_taken = False
     def re_id_reminders(current_reminders):
         # Reorganiza os IDs dos lembretes após apagar algum, pra ficarem sequenciais.
-        for i, r_item in enumerate(sorted(current_reminders, key=lambda x: int(x[\'id\']))): r_item[\'id\'] = i + 1
+        for i, r_item in enumerate(sorted(current_reminders, key=lambda x: int(x['id']))): r_item['id'] = i + 1
         return current_reminders
     if args.id.lower() == "all":
         if not reminders: msg = "Você já não tinha nenhum lembrete! 😊"; print_2b_message(msg, is_info=True)
@@ -1542,16 +1525,16 @@ def remember_clear(args):
             save_reminders(re_id_reminders(reminders_to_keep)); msg = f"{cleared_count} lembrete(s) concluído(s) apagados. ✨"; print_2b_message(msg, is_success=True); action_taken = True
         else: msg = "Nenhum lembrete concluído para apagar. 💖"; print_2b_message(msg, is_info=True)
     else:
-        reminder_to_remove = next((r for r in reminders if str(r[\'id\']) == args.id), None)
+        reminder_to_remove = next((r for r in reminders if str(r['id']) == args.id), None)
         if reminder_to_remove:
-            task_disp = reminder_to_remove.get(\'parsed_task\', f\'ID {args.id}\')
+            task_disp = reminder_to_remove.get('parsed_task', f'ID {args.id}')
             if reminder_to_remove.get("notification_job_id") and not reminder_to_remove.get("done"):
                 _cancel_termux_notification_at(reminder_to_remove["notification_job_id"])
-            reminders_after_removal = [r for r in reminders if str(r[\'id\']) != args.id]
-            save_reminders(re_id_reminders(reminders_after_removal)); msg = f"Lembrete ID {args.id} (\'{task_disp}\') apagado! 🗑️"; print_2b_message(msg, is_success=True); action_taken = True
+            reminders_after_removal = [r for r in reminders if str(r['id']) != args.id]
+            save_reminders(re_id_reminders(reminders_after_removal)); msg = f"Lembrete ID {args.id} ('{task_disp}') apagado! 🗑️"; print_2b_message(msg, is_success=True); action_taken = True
         else: msg = f"Não encontrei lembrete com ID {args.id} para apagar. 😕"; print_2b_message(msg, is_error=True)
     add_history_entry("assistant", msg)
-    if action_taken: add_history_entry("system_event", f"Lembrete(s) Apagado(s): critério \'{args.id}\'.")
+    if action_taken: add_history_entry("system_event", f"Lembrete(s) Apagado(s): critério '{args.id}'.")
 
 # --- Funções de Gerenciamento Seguro da Chave (Keyring) ---
 # Essa parte é super importante pra guardar a chave da API de forma segura.
@@ -1573,7 +1556,7 @@ def save_api_key_securely(api_key: str) -> bool:
     """
     if not KEYRING_AVAILABLE:
         # Este print só aparecerá se a biblioteca keyring não estiver instalada.
-        print_2b_message("A biblioteca \'keyring\' não está instalada. A chave será salva no config.json.", is_warning=True)
+        print_2b_message("A biblioteca 'keyring' não está instalada. A chave será salva no config.json.", is_warning=True)
         return False
 
     try:
@@ -1600,7 +1583,7 @@ def get_api_key_securely() -> str | None:
 def delete_api_key_securely() -> bool:
     """
     Apaga a chave da API do keychain do sistema.
-    Útil para um comando de \'reset\' ou ao trocar de chave.
+    Útil para um comando de 'reset' ou ao trocar de chave.
     Retorna True em caso de sucesso, False em caso de falha.
     """
     if not KEYRING_AVAILABLE:
@@ -1636,8 +1619,8 @@ def config_command(args):
                 if save_api_key_securely(api_key_input):
                     print_2b_message("Chave da API salva com segurança no keychain do seu sistema! ✨", is_success=True)
                     add_history_entry("system_event", "Chave da API configurada de forma segura no keychain.")
-                    if \'api_key\' in config:
-                        config.pop(\'api_key\') # Remove a chave antiga do config.json se ela existia.
+                    if 'api_key' in config:
+                        config.pop('api_key') # Remove a chave antiga do config.json se ela existia.
                         save_config(config)
                 else:
                     add_history_entry("system_event", "Falha ao tentar salvar a chave da API no keychain.")
@@ -1649,7 +1632,7 @@ def config_command(args):
         else:
             # Se passar um valor na linha de comando, ativamos o "bug feature" (salvar inseguramente).
             if args.value:
-                config[\'api_key\'] = args.value
+                config['api_key'] = args.value
                 save_config(config)
                 print_2b_message(
                     "AVISO: Sua chave de API foi salva de forma INSEGURA no arquivo de configuração.",
@@ -1658,9 +1641,9 @@ def config_command(args):
                 add_history_entry("system_event", "Chave da API salva de forma insegura como fallback.")
 
                 CONSOLE.line()
-                negative_responses = {\'não\', \'nao\', \'n\', \'depois\', \'mais tarde\', \'cancelar\', \'sair\', \'exit\', \'agora nao\', \'agora não\'}
+                negative_responses = {'não', 'nao', 'n', 'depois', 'mais tarde', 'cancelar', 'sair', 'exit', 'agora nao', 'agora não'}
                 try:
-                    prompt_text = Text.from_markup("[bold yellow]Estou iniciando meu modo agente para te ajudar a instalar o \'keyring\' e proteger sua chave. Continuar agora?[/bold yellow]")
+                    prompt_text = Text.from_markup("[bold yellow]Estou iniciando meu modo agente para te ajudar a instalar o 'keyring' e proteger sua chave. Continuar agora?[/bold yellow]")
                     user_response = Prompt.ask(prompt_text, default="sim", console=CONSOLE)
 
                     # Se a resposta não for negativa, iniciamos o agente para instalar o keyring!
@@ -1678,7 +1661,7 @@ def config_command(args):
             else:
                 # Se não passou valor, a instrução original permanece.
                 print_2b_message(
-                    "A biblioteca \'keyring\' é necessária para configurar a chave de forma segura.\n\n"
+                    "A biblioteca 'keyring' é necessária para configurar a chave de forma segura.\n\n"
                     "Se estiver com problemas, use `2b config api_key SUA_CHAVE_AQUI` para uma configuração temporária e insegura.",
                     is_error=True
                 )
@@ -1688,18 +1671,18 @@ def config_command(args):
         if args.key == "personality":
             if args.value in personalities:
                 config[args.key] = args.value
-                print_2b_message(f"Personalidade agora é \'{args.value}\'. Adoro! 😉", is_success=True)
-                action_desc = f"Personalidade alterada para \'{args.value}\'."
+                print_2b_message(f"Personalidade agora é '{args.value}'. Adoro! 😉", is_success=True)
+                action_desc = f"Personalidade alterada para '{args.value}'."
             else:
-                print_2b_message(f"Personalidade não existe. Opções: {\', \'.join(personalities.keys())}.", is_error=True)
-                action_desc = f"Tentativa de alterar personalidade para \'{args.value}\' (inválida)."
+                print_2b_message(f"Personalidade não existe. Opções: {', '.join(personalities.keys())}.", is_error=True)
+                action_desc = f"Tentativa de alterar personalidade para '{args.value}' (inválida)."
         elif args.key == "user":
             config[args.key] = args.value
             print_2b_message(f"Entendido! A partir de agora, vou te chamar de {args.value}. ❤️", is_success=True)
-            action_desc = f"Nome de usuário alterado para \'{args.value}\'."
+            action_desc = f"Nome de usuário alterado para '{args.value}'."
         else:
             config[args.key] = args.value
-            print_2b_message(f"Configuração \'{args.key}\' atualizada para \'{args.value}\'.", is_info=True)
+            print_2b_message(f"Configuração '{args.key}' atualizada para '{args.value}'.", is_info=True)
         
         save_config(config)
         if action_desc: add_history_entry("system_event", action_desc)
@@ -1709,14 +1692,14 @@ def config_command(args):
             if KEYRING_AVAILABLE and get_api_key_securely():
                 print_2b_message("✔️ Sim, a chave da API está configurada e guardada de forma segura no keychain do seu sistema.", is_success=True)
             else:
-                print_2b_message("❌ Não, a chave da API não está configurada. Use \'2b config api_key\' para configurá-la.", is_warning=True)
+                print_2b_message("❌ Não, a chave da API não está configurada. Use '2b config api_key' para configurá-la.", is_warning=True)
             add_history_entry("system_event", "Consulta de status da chave da API.")
             return
 
         value = config.get(args.key)
         if args.key == "user" and not value: value = get_user_name()
-        print_2b_message(f"Valor para \'{args.key}\': {value if value is not None else \'Não configurado\'}", is_info=True, skip_panel=True)
-        add_history_entry("system_event", f"Consulta de config: chave \'{args.key}\'.")
+        print_2b_message(f"Valor para '{args.key}': {value if value is not None else 'Não configurado'}", is_info=True, skip_panel=True)
+        add_history_entry("system_event", f"Consulta de config: chave '{args.key}'.")
         
     else:
         # Se nenhum argumento for passado, mostra todas as configurações e personalidades.
@@ -1728,12 +1711,12 @@ def config_command(args):
         
         if api_key_from_keyring:
             api_key_status = f"[green]{api_key_from_keyring[:3]}》(ﾉﾟДﾟ)ﾉ《{api_key_from_keyring[-3:]}[/green]" # Mostra só um pedacinho da chave por segurança.
-        elif \'api_key\' in config and config[\'api_key\']:
+        elif 'api_key' in config and config['api_key']:
              api_key_status = "[bold yellow]⚠️ Salva de forma INSEGURA[/bold yellow]" # Alerta se a chave estiver salva de forma insegura.
         elif KEYRING_AVAILABLE:
             api_key_status = "[red]❌ Não configurada[/red]" # Se o keyring está disponível mas a chave não está lá.
         else:
-            api_key_status = "[yellow]⚠️ \'keyring\' não instalado[/yellow]" # Se o keyring nem está instalado.
+            api_key_status = "[yellow]⚠️ 'keyring' não instalado[/yellow]" # Se o keyring nem está instalado.
         
         display_items["api_key"] = api_key_status
 
@@ -1747,17 +1730,17 @@ def config_command(args):
             perso_table = Table(box=None, show_header=False, padding=(0,1,0,1))
             perso_table.add_column("Nome", style="bold magenta"); perso_table.add_column("Descrição")
             for p_key, p_desc in personalities.items():
-                first_sentence = p_desc.strip().split(\".\")[0].strip() + "."
+                first_sentence = p_desc.strip().split(".")[0].strip() + "."
                 perso_table.add_row(f"• {p_key}", Text(first_sentence, style="dim"))
             CONSOLE.print(perso_table)
         else:
             # Versão sem Rich para exibir as configurações.
             CONSOLE.print("Configurações atuais:")
             for k,v in display_items.items():
-                clean_v = re.sub(r\'\'.*?\'\', \'\', v)
+                clean_v = re.sub(r'\[.*?\]', '', v)
                 CONSOLE.print(f"  {k}: {clean_v}")
             CONSOLE.print("\nPersonalidades disponíveis:")
-            for pk, pd in personalities.items(): CONSOLE.print(f"  - {pk}: {pd.strip().split(\".\")[0]}.")
+            for pk, pd in personalities.items(): CONSOLE.print(f"  - {pk}: {pd.strip().split('.')[0]}.")
 
 
 def get_dispatcher_prompt():
@@ -1771,7 +1754,7 @@ def get_dispatcher_prompt():
     - "search": Use para responder perguntas que exigem conhecimento atualizado, opiniões ou comparações. (Ex: "qual a capital da Austrália?", "melhor laptop para programação")
     - "remember_add": Use quando o usuário pedir para ser lembrado de algo. (Ex: "lembre-me de comprar leite amanhã")
     - "generate": Use quando o usuário pedir para criar um script, trecho de código ou configuração. (Ex: "crie um script python para renomear arquivos")
-    - "explain": Use quando o usuário pedir para explicar um comando, erro ou código. (Ex: "o que o comando \'ls -l\' faz?")
+    - "explain": Use quando o usuário pedir para explicar um comando, erro ou código. (Ex: "o que o comando 'ls -l' faz?")
     - "chat": Use como padrão para qualquer solicitação que não se encaixe nas outras, como saudações e conversas gerais. (Ex: "bom dia", "como você está?")
     O objeto JSON de saída DEVE ter a seguinte estrutura: {"tool_name": "nome_da_ferramenta", "tool_input": "o input para a ferramenta"}
     """
@@ -1796,7 +1779,7 @@ def dispatcher_command(user_query_string):
         tool_name = ai_decision.get("tool_name")
         tool_input = ai_decision.get("tool_input", "")
         add_history_entry("user", user_query_string)
-        add_history_entry("system_event", f"Dispatcher usou a ferramenta \'{tool_name}\' com o input: \'{tool_input[:50]}...\'")
+        add_history_entry("system_event", f"Dispatcher usou a ferramenta '{tool_name}' com o input: '{tool_input[:50]}...'")
         # Chama a função correspondente à ferramenta decidida pela IA.
         if tool_name == "do": do_command(MockArgs(query=tool_input.split(), timeout=300, max_steps=20))
         elif tool_name == "search": search_command(MockArgs(query=tool_input.split(), debug=False))
@@ -1805,7 +1788,7 @@ def dispatcher_command(user_query_string):
         elif tool_name == "explain": explain_command(MockArgs(query=tool_input, from_file=None))
         elif tool_name == "chat": chat_command(MockArgs(query=user_query_string.split()), start_interactive_after_reply=True)
         else:
-            print_2b_message(f"IA sugeriu uma ferramenta desconhecida (\'{tool_name}\'). Vamos tratar como um chat.", is_warning=True)
+            print_2b_message(f"IA sugeriu uma ferramenta desconhecida ('{tool_name}'). Vamos tratar como um chat.", is_warning=True)
             chat_command(MockArgs(query=user_query_string.split()), start_interactive_after_reply=True)
     except (json.JSONDecodeError, KeyError) as e:
         print_2b_message(f"Tive um problema para decidir a ação. Vamos tratar como um chat. Detalhe: {e}", is_warning=True)
@@ -1819,16 +1802,16 @@ def main():
     # --- Guardião de Segurança e Autocura ---
     # Este bloco é executado no início de cada comando.
     # Ele verifica se a chave da API está salva de forma insegura e tenta migrá-la para o keyring.
-    # Não executa se o usuário já estiver tentando rodar o \'config\'.
-    if \'config\' not in sys.argv:
+    # Não executa se o usuário já estiver tentando rodar o 'config'.
+    if 'config' not in sys.argv:
         try:
             config = load_config()
             # A condição de cura: keyring está instalado E uma chave insegura ainda existe.
-            if KEYRING_AVAILABLE and config.get(\'api_key\'):
-                insecure_key = config.get(\'api_key\')
+            if KEYRING_AVAILABLE and config.get('api_key'):
+                insecure_key = config.get('api_key')
                 
                 print_2b_message(
-                    "Detectei uma chave de API insegura e o \'keyring\' já está disponível. "
+                    "Detectei uma chave de API insegura e o 'keyring' já está disponível. "
                     "Movendo para o seu keychain seguro agora...",
                     is_info=True,
                     skip_panel=True
@@ -1838,7 +1821,7 @@ def main():
                 if save_api_key_securely(insecure_key):
                     # Se a chave foi salva com sucesso no keychain...
                     # removemos do dicionário de configuração...
-                    config.pop(\'api_key\')
+                    config.pop('api_key')
                     # ...e salvamos o arquivo de configuração modificado no disco.
                     save_config(config)
                     
@@ -1851,38 +1834,39 @@ def main():
             pass # Ignora erros durante a autocura para não travar o programa.
             
     parser = argparse.ArgumentParser(
-        description="2B: Sua assistente de IA pessoal no terminal. 🖤🤖\nUse \'2b <comando> --help\' para mais detalhes.",
+        description="2B: Sua assistente de IA pessoal no terminal. 🖤🤖\nUse '2b <comando> --help' para mais detalhes.",
         formatter_class=argparse.RawTextHelpFormatter,
-        epilog="Exemplos:\n"
-               "  2b do \"liste os processos na porta 8080\"\n"
-               "  2b search \"melhor editor de texto para python\"\n"
-               "  2b \"lembre-me de comprar pão amanhã às 10h\""
+        epilog="""Exemplos:
+  2b do "liste os processos na porta 8080"
+  2b search "melhor editor de texto para python"
+  2b "lembre-me de comprar pão amanhã às 10h"
+"""
     )
-    VERSION = "2ByNekyl-1.1.0" # Versão do programa.
-    parser.add_argument(\'--version\', \'-v\', action=\'store_true\', help=\'Mostra a versão do programa\')
+    VERSION = "2ByNekyl-1.1.1" # Versão do programa.
+    parser.add_argument('--version', '-v', action='store_true', help='Mostra a versão do programa')
     subparsers = parser.add_subparsers(dest="command", help="Comandos da 2B") # Define os subcomandos.
     
     # Configuração do subcomando 'do'.
-    do_parser = subparsers.add_parser("do", aliases=[\'d\'], help="Executa tarefas no terminal de forma sequencial e interativa.")
+    do_parser = subparsers.add_parser("do", aliases=['d'], help="Executa tarefas no terminal de forma sequencial e interativa.")
     do_parser.add_argument("query", nargs="+", type=str, help="A tarefa que você quer que a 2B execute.")
     do_parser.add_argument("--timeout", type=int, default=300, help="Timeout para cada passo (padrão: 300s).")
     do_parser.add_argument("--max-steps", type=int, default=20, help="Número máximo de passos que o agente pode executar (padrão: 20).")
     do_parser.set_defaults(func=do_command)
     
     # Configuração do subcomando 'search'.
-    search_parser = subparsers.add_parser("search", aliases=[\'s\'], help="Busca um tópico na web e resume os resultados.")
+    search_parser = subparsers.add_parser("search", aliases=['s'], help="Busca um tópico na web e resume os resultados.")
     search_parser.add_argument("query", nargs="+", type=str, help="O que você quer pesquisar?")
-    search_parser.add_argument(\'--debug\', action=\'store_true\', help=\'Salva o HTML da busca para depuração.\')
+    search_parser.add_argument('--debug', action='store_true', help='Salva o HTML da busca para depuração.')
     search_parser.set_defaults(func=search_command)
     
     # Configuração do subcomando 'explain'.
-    explain_parser = subparsers.add_parser("explain", aliases=[\'ex\'], help="Explica um comando, erro ou conteúdo de arquivo.")
+    explain_parser = subparsers.add_parser("explain", aliases=['ex'], help="Explica um comando, erro ou conteúdo de arquivo.")
     explain_parser.add_argument("query", nargs="?", type=str, help="O comando, erro ou pergunta sobre o arquivo.")
     explain_parser.add_argument("--from-file", "-f", type=str, help="Caminho do arquivo para explicar.")
     explain_parser.set_defaults(func=explain_command)
     
     # Configuração do subcomando 'generate'.
-    generate_parser = subparsers.add_parser("generate", aliases=[\'gen\'], help="Gera código, scripts ou configurações.")
+    generate_parser = subparsers.add_parser("generate", aliases=['gen'], help="Gera código, scripts ou configurações.")
     generate_parser.add_argument("query", type=str, help="Descrição do que gerar.")
     generate_parser.add_argument("--lang", "-l", type=str, help="Linguagem/tipo (ex: python, bash).")
     generate_parser.add_argument("--output", "-o", type=str, help="Arquivo para salvar o código gerado.")
@@ -1890,21 +1874,21 @@ def main():
     generate_parser.set_defaults(func=generate_command)
     
     # Configuração do subcomando 'chat'.
-    chat_parser = subparsers.add_parser("chat", aliases=[\'c\'], help="Chat interativo ou pergunta direta.")
+    chat_parser = subparsers.add_parser("chat", aliases=['c'], help="Chat interativo ou pergunta direta.")
     chat_parser.add_argument("query", nargs="*", type=str, help="Pergunta (opcional para chat interativo).")
     chat_parser.set_defaults(func=chat_command)
     
     # Configuração do subcomando 'greet'.
-    greet_parser = subparsers.add_parser("greet", aliases=[\'hi\'], help="Saudação da 2B (ótimo para .bashrc/.zshrc).")
+    greet_parser = subparsers.add_parser("greet", aliases=['hi'], help="Saudação da 2B (ótimo para .bashrc/.zshrc).")
     greet_parser.set_defaults(func=greet_command)
     
     # Configuração do subcomando 'remember' e seus sub-subcomandos.
-    remember_parser = subparsers.add_parser("remember", aliases=[\'rem\'], help="Gerencia lembretes.")
+    remember_parser = subparsers.add_parser("remember", aliases=['rem'], help="Gerencia lembretes.")
     rem_subs = remember_parser.add_subparsers(dest="remember_action", help="Ação para o lembrete", required=True)
     rem_add = rem_subs.add_parser("add", help="Adiciona lembrete."); rem_add.add_argument("text", type=str, help="Texto do lembrete."); rem_add.set_defaults(func=remember_add)
     rem_list = rem_subs.add_parser("ls", help="Lista lembretes."); rem_list.add_argument("--all", action="store_true", help="Inclui concluídos."); rem_list.set_defaults(func=remember_list)
     rem_done = rem_subs.add_parser("done", help="Marca lembrete como concluído."); rem_done.add_argument("id", type=str, help="ID do lembrete."); rem_done.set_defaults(func=remember_done)
-    rem_clear = rem_subs.add_parser("rm", help="Apaga lembretes."); rem_clear.add_argument("id", type=str, help="ID, \'all\' (todos), ou \'done\' (concluídos)."); rem_clear.set_defaults(func=remember_clear)
+    rem_clear = rem_subs.add_parser("rm", help="Apaga lembretes."); rem_clear.add_argument("id", type=str, help="ID, 'all' (todos), ou 'done' (concluídos)."); rem_clear.set_defaults(func=remember_clear)
     
     # Configuração do subcomando 'config'.
     config_parser = subparsers.add_parser("config", help="Configura a 2B (API Key, personalidade, user).")
@@ -1913,7 +1897,7 @@ def main():
     config_parser.set_defaults(func=config_command)
     
     known_commands = list(subparsers.choices.keys())
-    safe_flags = [\'--version\', \'-v\']
+    safe_flags = ['--version', '-v']
     # Se o primeiro argumento não for um comando conhecido, assume que é uma query para o dispatcher.
     if len(sys.argv) > 1 and sys.argv[1] not in known_commands and sys.argv[1] not in safe_flags:
         user_query_string = " ".join(sys.argv[1:])
@@ -1932,11 +1916,11 @@ def main():
         else:
             print(f"{parser.prog} {VERSION}")
         return
-    if hasattr(args, \'func\'):
+    if hasattr(args, 'func'):
         try:
             args.func(args) # Chama a função associada ao subcomando.
         except Exception as e:
-            print_2b_message(f"Oh não, um erro inesperado aconteceu: {e}\nPor favor, reporte isso para que eu possa melhorar!️", is_error=True)
+            print_2b_message(f"Oh não, um erro inesperado aconteceu: {e}\nPor favor, reporte isso para que eu possa melhorar!", is_error=True)
             if RICH_AVAILABLE:
                 from rich.traceback import Traceback
                 CONSOLE.print(Traceback(show_locals=False)) # Mostra o traceback se o Rich estiver disponível.
@@ -1946,7 +1930,5 @@ def main():
 if __name__ == "__main__":
     # Se o programa for executado sem argumentos, ele chama o comando 'greet' por padrão.
     if len(sys.argv) == 1:
-        sys.argv.append(\'greet\')
+        sys.argv.append('greet')
     main() # Inicia a função principal.
-
-
