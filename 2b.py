@@ -453,10 +453,10 @@ def call_gemini_api(prompt_content, personality_mode=None, override_system_promp
         if live_context: live_context.start(refresh=True)
         elif not RICH_AVAILABLE and show_spinner: CONSOLE.print("2B: Pensando...")
 
-        # A variável `api_key` agora vem da nossa lógica segura.
+
         client = genai.Client(api_key=api_key) # Inicializa o cliente da API do Gemini.
         response = client.models.generate_content(
-            model="gemini-2.5-flash", # Modelo atualizado para o flash mais recente (mais rápido e barato).
+            model="gemini-2.5-flash",
             contents=final_contents,
             config=types.GenerateContentConfig(
                 # thinking_config=types.ThinkingConfig(thinking_budget=0) # Opcional: desabilita o "thinking..." do modelo.
@@ -496,9 +496,7 @@ def _get_random_user_agent():
     "Mozilla/5.0 (Android 12; Mobile; LG-M255; rv:124.0) Gecko/124.0 Firefox/124.0",
     "Mozilla/5.0 (Linux; Android 13; SM-G991U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Mobile Safari/537.36 OPR/76.0.4017.72489",
     "Mozilla/5.0 (Linux; Android 11; SM-A515F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.110 Mobile Safari/537.36 OPR/74.2.3922.71953",
-    ]) # """Precisa msm de tudo isso?
-    # Na real não, mas não tá atrapalhando msm kk""" # Comentário divertido no código original, mantido aqui. 
-
+    ]) # """Precisa msm de tudo isso? Na real não, mas não tá atrapalhando msm kk""" 
 
 
 
@@ -639,7 +637,7 @@ def _fetch_and_clean_html(url):
     """Baixa o conteúdo HTML de uma URL e remove partes desnecessárias (scripts, estilos, navegação, etc.)."""
     try:
         headers = {'User-Agent': _get_random_user_agent()}
-        time.sleep(random.uniform(0.5, 1.5)) # Entendedores entenderão •-•)☕️ # Um pequeno delay pra não sobrecarregar os servidores.
+        time.sleep(random.uniform(0.5, 1.5)) # Entendedores entenderão •-•)☕️
         response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
 
