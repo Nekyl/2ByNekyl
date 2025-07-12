@@ -1,24 +1,26 @@
+--- START OF FILE REhADME.md ---
+
 # 2B - Sua Assistente Pessoal
 
 2B é uma assistente de linha de comando desenvolvida em Python para te ajudar com diversas tarefas, desde executar ações complexas no terminal, pesquisar na web e sintetizar informações, até explicar comandos, gerar código e gerenciar lembretes. Ela é personalizável e projetada para ser sua parceira tecnológica definitiva.
 
 ## ✅ Pré-requisitos
 
- - **Python 3,6+**
-  Certifique-se de ter o Python 3instalado no seu sistema.
+- **Python 3.6+**
+  Certifique-se de ter o Python 3 instalado no seu sistema.
 
-- **Chave da API Google (Gemini) **
-  Você precisará de uma chave da API do Google para o modelo Gemini.Você precisará de uma chave da API do Google para o modelo Gemini.
+- **Chave da API Google (Gemini)**
+  Você precisará de uma chave da API do Google para o modelo Gemini.
   
-  👉 Obtenha a sua em: https://aistudio.google.com/app/apikey
+  👉 Obtenha a sua em: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
 
-- **Dependências Python**Dependências Python**
-  -
-  Rico: Para uma saída de terminal mais bonita e interativa.
-  - Pedidos: Para o módulo de busca na web.
-  - Belo: Para extrair conteúdo das páginas web na busca.grupo 4: Para extrair conteúdo das páginas web na busca.
-  -'Keyring: Para armazenar a API Key no café do aparelho.
-  Tiktoken: Para contagem precisa de tokens.
+- **Dependências Python**
+  - `genai-google`: Para se comunicar com a API do Gemini.
+  - `rich`: Para uma saída de terminal mais bonita e interativa.
+  - `requests`: Para o módulo de busca na web.
+  - `beautifulsoup4`: Para extrair conteúdo das páginas web na busca.
+  - `keyring`: Para armazenar a API Key no cofre do aparelho.
+  - `tiktoken`: Para contagem precisa de tokens.
   - `lxml`: (Opcional, mas recomendado) Um parser de HTML mais rápido para a busca.
   - **Para usuários do Termux:**
     - `at`: Para agendamento de tarefas em segundo plano (notificações).
@@ -33,12 +35,12 @@ Siga estes passos para ter a 2B pronta para uso na sua máquina.
 ### 1. Clone o Repositório
 Primeiro, clone o projeto para sua máquina e entre no diretório criado.
 
-```Bash.
- seu clone https://github.com/ekyl/2Por Nekyl.gitN
- cd 2Por Nekyl
-'''
+```bash
+git clone https://github.com/nekyl/2ByNekyl.git
+cd 2ByNekyl
+```
 
-### 2. Instale como dependências
+### 2. Instale as Dependências
 
 Use o arquivo `requirements.txt` para instalar todas as bibliotecas Python necessárias:
 
@@ -314,7 +316,7 @@ Configura as opções da 2B, como a chave da API, nome de usuário e a personali
 *   Configurar a chave da API:
     ```bash
     2b config api_key SUA_CHAVE_API  
-    "'
+    ```
 *   Configurar seu nome:
     ```bash
     2b config user SeuNome
@@ -341,3 +343,4 @@ A 2B pode assumir diferentes personalidades. Configure com `2b config personalit
 Use `2b config` para ver as opções disponíveis e escolha a que mais te agrada! 😉
 
 _2ByNekyll-1.1.0_
+--- END OF FILE REhADME.md ---
