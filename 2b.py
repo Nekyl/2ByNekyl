@@ -1895,7 +1895,7 @@ def main():
     config_parser.set_defaults(func=config_command)
     
     known_commands = list(subparsers.choices.keys())
-    safe_flags = ['--version', '-v']
+    safe_flags = ['--version', '--help', '-h', '-v']
     # Se o primeiro argumento não for um comando conhecido, assume que é uma query para o dispatcher.
     if len(sys.argv) > 1 and sys.argv[1] not in known_commands and sys.argv[1] not in safe_flags:
         user_query_string = " ".join(sys.argv[1:])
