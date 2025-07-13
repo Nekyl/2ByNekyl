@@ -15,7 +15,7 @@ requests
 # Para parsear o conteúdo HTML das páginas web
 beautifulsoup4
 
-# Para criptografar a Chave de API
+# Para armazenar a Chave API na Keychain (cofre do aparelho)
 keyring
 keyrings.alt
 
