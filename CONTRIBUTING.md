@@ -5,7 +5,7 @@ Olá! Que incrível que você tem interesse em ajudar a 2B a crescer. Toda contr
 ## ✨ Encontrou um Bug?
 
 Se você encontrou um comportamento inesperado ou um erro:
-1.  Verifique a [seção de Issues](https://github.com/nekyl/SEU-REPOSITORIO/issues) para ver se alguém já reportou o mesmo problema.
+1.  Verifique a [seção de Issues](https://github.com/nekyl/2ByNekyl/issues) para ver se alguém já reportou o mesmo problema.
 2.  Se não, abra uma nova Issue! Por favor, inclua o máximo de detalhes possível:
     *   O comando exato que você rodou.
     *   O que você esperava que acontecesse.
@@ -14,7 +14,7 @@ Se você encontrou um comportamento inesperado ou um erro:
 
 ## 💡 Tem uma Ideia para uma Nova Funcionalidade?
 
-Adoramos novas ideias! Sinta-se à vontade para abrir uma [nova Issue](https://github.com/SEU-USUARIO/SEU-REPOSITORIO/issues) descrevendo sua sugestão. Quanto mais detalhes sobre como ela funcionaria e por que seria útil, melhor!
+Adoramos novas ideias! Sinta-se à vontade para abrir uma [nova Issue](https://github.com/nekyl/2ByNekyl/issues) descrevendo sua sugestão. Quanto mais detalhes sobre como ela funcionaria e por que seria útil, melhor!
 
 ## 🚀 Pronto para Enviar uma Contribuição? (Pull Requests)
 
@@ -23,7 +23,7 @@ Se você quer corrigir um bug ou implementar uma nova funcionalidade, siga estes
 1.  **Faça um Fork** do repositório para a sua conta do GitHub.
 2.  **Clone** o seu fork para a sua máquina local:
     ```bash
-    git clone https://github.com/nekyl/2b-assistente.git
+    git clone https://github.com/nekyl/2ByNekyl.git
     ```
 3.  **Instale as dependências**:
     ```bash
